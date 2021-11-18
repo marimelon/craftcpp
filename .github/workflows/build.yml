@@ -37,3 +37,8 @@ jobs:
 
     - name: Test
       run: python -m pytest
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        path: build/
