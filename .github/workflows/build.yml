@@ -27,7 +27,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
 
     - name: Add requirements
-      run: python -m pip install --upgrade wheel setuptools
+      run: python -m pip install --upgrade wheel setuptools pybind11-stubgen
 
     - name: Build and install
       run: pip install --verbose .[test]
@@ -35,7 +35,13 @@ jobs:
         CC:  clang-12
         CXX: clang++-12
 
+    - name: Generate stubs
+      run: cd ./build/lib.* && pybind11-stubgen craftcpp --no-setup-py --output-dir="."
+      env:
+        PYTHONPATH: .
+        PYTHONUTF8: 1
+
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        path: build/
+        path: build/lib.*/
