@@ -62,6 +62,9 @@ struct CraftInfo
 		}
 		if (condition_rates.has_value()) {
 			this->condition_rates = condition_rates.value();
+			for (auto con : all_conditions) {
+				this->condition_rates.try_emplace(con, 0);
+			}
 		}
 
 		return this;
