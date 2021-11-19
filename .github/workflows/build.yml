@@ -36,7 +36,10 @@ jobs:
         CXX: clang++-12
 
     - name: Generate stubs
-      run: cd ./build/lib.* && pybind11-stubgen craftcpp --no-setup-py --output-dir="."
+      run: |
+        cd ./build/lib.*
+        pybind11-stubgen craftcpp --no-setup-py --output-dir="."
+        mv ./*-stubs/__init__.pyi ./craftcpp.pyi
       env:
         PYTHONPATH: .
         PYTHONUTF8: 1
