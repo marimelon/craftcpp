@@ -29,7 +29,7 @@ struct CraftInfo
 		{Condition::長持続,0.},
 	};
 
-	void set(
+	auto set(
 		std::optional<int> max_cp,
 		std::optional<int> max_durability,
 		std::optional<int> max_progress,
@@ -63,5 +63,7 @@ struct CraftInfo
 		if (condition_rates.has_value()) {
 			this->condition_rates = condition_rates.value();
 		}
+
+		return this;
 	}
 };
