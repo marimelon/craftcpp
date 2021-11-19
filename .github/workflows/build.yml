@@ -44,7 +44,12 @@ jobs:
         PYTHONPATH: .
         PYTHONUTF8: 1
 
+    - name: Move artifact
+      run: |
+        mkdir artifact
+        mv ./build/lib.*/* ./artifact
+
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        path: build/lib.*/*
+        path: artifact/*
