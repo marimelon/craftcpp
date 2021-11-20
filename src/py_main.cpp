@@ -20,6 +20,8 @@ auto py_enum(const py::handle& m) {
         auto name = magic_enum::enum_name<E>(val);
         m_enum.value(name.data(), val);
     }
+    constexpr auto enum_count = magic_enum::enum_count<E>();
+    m_enum.def_static("len", []()->auto{return enum_count; });
     return m_enum;
 }
 
