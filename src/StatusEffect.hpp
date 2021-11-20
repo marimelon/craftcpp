@@ -14,6 +14,7 @@ enum class StatusEffect:int {
     最終確認,
     アートオブエレメンタル,
     ヴェネレーション,
+    加工
 };
 
-constexpr auto NumStatusEffects = magic_enum::enum_count<StatusEffect>();
+constexpr auto StatusEffectsCount = magic_enum::enum_count<StatusEffect>();

@@ -56,6 +56,10 @@ void CrafterCore::ApplyCPDurabilityChange(const CraftInfo& craft_status, State* 
 		d_cp = static_cast<int>(std::floor(d_cp / 2.));
 	}
 
+	if(state->buff.at(SF::加工) > 0 && action == Action::中級加工){
+		d_cp = -18;
+	}
+
 	state->cp = std::min(craft_status.max_cp, state->cp + d_cp);
 
 	// Durability
