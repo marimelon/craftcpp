@@ -303,14 +303,7 @@ std::vector<Action> CrafterCore::AvailableActions(const CraftInfo& craft_status,
 	return result;
 }
 
-State CrafterCore::ExecuteAction(const CraftInfo& craft_status, State state, Action action)
-{
-	// アクションを実行する
-
-	if (CanExecuteAction(craft_status, state, action) == false) {
-		throw "Can't ExecuteAction";
-	}
-	
+float CrafterCore::SuccessProbability(const State& state,Action action) {
 	auto parcentage = ALL_ACTIONS[action].rate;
 	if (state.condition == Condition::安定) {
 		parcentage += 20;
@@ -319,8 +312,38 @@ State CrafterCore::ExecuteAction(const CraftInfo& craft_status, State state, Act
 		parcentage = 100;
 	}
 	parcentage = std::min(100, parcentage);
+	return parcentage < 100 ? rnd.randBool(parcentage / 100.) : 1;
+}
 
-	auto is_action_successful = parcentage < 100 ? rnd.randBool(parcentage / 100.) : true;
+std::map<Condition,float> CrafterCore::ConditionProbability(const CraftInfo& craft_status, const State& state) {
+	if (state.condition == Condition::最高品質) {
+		return std::map<Condition, float> { {Condition::低品質, 1} };
+	}
+
+	auto total = 0.f;
+	for (const auto& [con, p] : craft_status.condition_rates) {
+		total += p;
+	}
+
+	auto P = std::map<Condition, float>();
+	for (const auto& [con,p] : craft_status.condition_rates) {
+		if (p > 0) {
+			P.insert({ con, p / total });
+		}
+	}
+	return P;
+}
+
+State CrafterCore::ExecuteAction(const CraftInfo& craft_status, State state, Action action)
+{
+	// アクションを実行する
+
+	if (CanExecuteAction(craft_status, state, action) == false) {
+		throw "Can't ExecuteAction";
+	}
+
+	auto P = SuccessProbability(state, action);
+	auto is_action_successful = P < 1 ? rnd.randBool(P) : true;
 
 	if (action == Action::設計変更) {
 		state.設計変更Count += 1;

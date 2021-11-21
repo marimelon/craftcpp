@@ -67,6 +67,8 @@ public:
 
 	static Condition RandomlyGenNextCondition(const CraftInfo& craft_status,const Condition condition);
 	static std::vector<Action> AvailableActions(const CraftInfo& craft_status, const State& state);
+	static float SuccessProbability(const State& state, Action action);
+	static std::map<Condition, float> ConditionProbability(const CraftInfo& craft_status, const State& state);
 	static State ExecuteAction(const CraftInfo& craft_status, State state, Action action);
 };
 

@@ -153,5 +153,7 @@ PYBIND11_MODULE(craftcpp, m) {
         .def_static("DeterministicExecuteAction", &CrafterCore::DeterministicExecuteAction)
         .def_static("ExecuteAction",&CrafterCore::ExecuteAction)
         .def_static("AvailableActions", &CrafterCore::AvailableActions)
+        .def_static("SuccessProbability",&CrafterCore::SuccessProbability)
+        .def_static("ConditionProbability",&CrafterCore::ConditionProbability)
         .def_static("RandomlyGenNextCondition", &CrafterCore::RandomlyGenNextCondition);
 }
