@@ -1,6 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h> // vector用
 #include <pybind11/operators.h>//operator
+#include <pybind11/stl_bind.h>
 
 #include "State.hpp"
 #include "StatusEffect.hpp"
@@ -26,8 +27,23 @@ auto py_enum(const py::handle& m) {
     return m_enum;
 }
 
+PYBIND11_MAKE_OPAQUE(std::map<StatusEffect, int>);
+
+using StatusEffectsMap = std::map<StatusEffect, int>;
+
 PYBIND11_MODULE(craftcpp, m) {
     m.doc() = "craftcpp";
+
+    // py::bind_map<std::map<StatusEffect, int>>(m, "MapStatusEffectInt");
+
+    py::class_<StatusEffectsMap>(m, "StatusEffectsMap")
+        .def(py::init<>())
+        .def("__len__", [](const StatusEffectsMap& v) { return v.size(); })
+        .def("__iter__", [](StatusEffectsMap& v) {
+        return py::make_iterator(v.begin(), v.end());
+    }, py::keep_alive<0, 1>())
+        .def("__getitem__", [](const StatusEffectsMap& v, StatusEffect sf) {return v.at(sf); })
+        .def("__setitem__", [](StatusEffectsMap& v, StatusEffect sf, int val) {v.insert_or_assign(sf, val); });
 
     py_enum<Condition>(m);
 
@@ -84,7 +100,7 @@ PYBIND11_MODULE(craftcpp, m) {
                 s.durability = t[3].cast<int>();
                 s.condition = t[4].cast<Condition>();
                 s.turn = t[5].cast<int>();
-                s.buff = t[6].cast<std::map<StatusEffect,int>>();
+                s.buff = t[6].cast<StatusEffectsMap>();
                 s.設計変更Count = t[7].cast<int>();
                 s.inner_quiet = t[8].cast<int>();
                 return s;

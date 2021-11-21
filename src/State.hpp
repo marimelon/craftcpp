@@ -19,7 +19,7 @@ struct State
 	int durability = 0;
 	Condition condition = Condition::通常;
 	int turn = 0;
-	std::map<StatusEffect, int> buff = { 
+	std::map<StatusEffect, int> buff = {
 			{StatusEffect::初手,0},
 			{StatusEffect::グレートストライド,0},
 			{StatusEffect::イノベーション,0},
@@ -30,7 +30,8 @@ struct State
 			{StatusEffect::経過観察,0},
 			{StatusEffect::最終確認,0},
 			{StatusEffect::アートオブエレメンタル,0},
-			{StatusEffect::ヴェネレーション,0} };
+			{StatusEffect::ヴェネレーション,0},
+			{StatusEffect::加工,0} };
 
 	int 設計変更Count = 0;
 	int inner_quiet = 0;
