@@ -83,6 +83,9 @@ void CrafterCore::ApplyProgressChange(const CraftInfo& craft_status, State* stat
 	if (eff == 0) {
 		return;
 	}
+
+	eff /= 100;
+
 	if (state->buff.at(SF::確信) > 0) {
 		eff *= 2.;
 		state->buff.at(SF::確信) = 0;
