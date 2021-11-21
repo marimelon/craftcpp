@@ -53,6 +53,36 @@ PYBIND11_MODULE(craftcpp, m) {
 
     py::class_<CraftInfo>(m, "CraftInfo")
         .def(py::init<>())
+
+        .def(py::pickle(
+            [](const CraftInfo& self) {
+                return py::make_tuple(
+                    self.max_cp,
+                    self.max_durability,
+                    self.max_progress,
+                    self.max_quality,
+                    self.base_progress,
+                    self.iq_table,
+                    self.illegal_actions,
+                    self.condition_rates
+                );
+            },
+            [](py::tuple t) {
+                if (t.size() != 8)
+                    throw std::runtime_error("Invalid state!");
+                auto s = CraftInfo();
+                s.max_cp = t[0].cast<int>();
+                s.max_durability = t[1].cast<int>();
+                s.max_progress = t[2].cast<int>();
+                s.max_quality = t[3].cast<int>();
+                s.base_progress = t[4].cast<int>();
+                s.iq_table = t[5].cast<std::array<int, 12>>();
+                s.illegal_actions = t[6].cast<std::vector<Action>>();
+        		s.condition_rates = t[7].cast<std::map<Condition, float>>();
+                return s;
+            })
+        )
+        
         .def("set", &CraftInfo::set,
             py::arg("max_cp") = py::none(),
             py::arg("max_durability") = py::none(),
