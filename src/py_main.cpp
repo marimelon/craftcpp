@@ -163,6 +163,7 @@ PYBIND11_MODULE(craftcpp, m)
 			"get_copy", [](State & self) -> auto { return self; }, py::return_value_policy::copy)
 		.def("get_score", &State::getScore)
 		.def("get_score2", &State::getScore2)
+		.def("get_score3", &State::getScore3)
 		.def("legal_actions", &State::legal_actions)
 		.def("isEnd", &State::isEnd)
 

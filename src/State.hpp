@@ -63,9 +63,14 @@ struct State
 			return this->quality / (float)info.max_quality;
 		}
 		else {
-			return ((this->progress / (float)info.max_progress) + (this->quality / (float)info.max_quality) - 2) / 2.;
+			return ((this->progress / (float)info.max_progress) + (this->quality / (float)info.max_quality) - 2) / 2.f;
 		}
 	}
+
+	float getScore3(const CraftInfo& info) {
+		return ((this->progress / (float)info.max_progress) + (this->quality / (float)info.max_quality)) - 1;
+	}
+
 
 	std::string to_string();
 
