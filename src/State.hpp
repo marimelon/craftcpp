@@ -58,6 +58,15 @@ struct State
 		}
 	}
 
+	float getScore2(const CraftInfo& info) {
+		if (this->progress >= info.max_progress) {
+			return this->quality / (float)info.max_quality;
+		}
+		else {
+			return ((this->progress / (float)info.max_progress) + (this->quality / (float)info.max_quality) - 2) / 2.;
+		}
+	}
+
 	std::string to_string();
 
 	std::vector<Action> legal_actions(const CraftInfo& info);
