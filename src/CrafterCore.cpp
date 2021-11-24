@@ -166,6 +166,10 @@ void CrafterCore::ApplyInnerQuietChange(const CraftInfo& craft_status, State* st
 {
 	// インナークワイエットを処理する
 
+	if (state->inner_quiet == 0) {
+		return;
+	}
+
 	switch (action)
 	{
 	case Action::加工:
@@ -303,7 +307,10 @@ std::vector<Action> CrafterCore::AvailableActions(const CraftInfo& craft_status,
 	return result;
 }
 
-float CrafterCore::SuccessProbability(const State& state,Action action) {
+float CrafterCore::SuccessProbability(const State& state,Action action) 
+{
+	// アクション成功確率の計算
+
 	auto parcentage = ALL_ACTIONS[action].rate;
 	if (state.condition == Condition::安定) {
 		parcentage += 20;
@@ -315,7 +322,10 @@ float CrafterCore::SuccessProbability(const State& state,Action action) {
 	return parcentage < 100 ? rnd.randBool(parcentage / 100.) : 1;
 }
 
-std::map<Condition,float> CrafterCore::ConditionProbability(const CraftInfo& craft_status, const State& state) {
+std::map<Condition,float> CrafterCore::ConditionProbability(const CraftInfo& craft_status, const State& state) 
+{
+	// 次状態の確率を取得
+
 	if (state.condition == Condition::最高品質) {
 		return std::map<Condition, float> { {Condition::低品質, 1} };
 	}
