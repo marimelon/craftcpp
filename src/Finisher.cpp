@@ -6,8 +6,10 @@ Finisher::Finisher(const CraftInfo info, const std::vector<Action> actions) : ac
 	first_state.buff.at(StatusEffect::初手) = 0;
 	first_state.inner_quiet = 11;
 	auto last_state = first_state;
-	for (auto action : actions) {
-		if (last_state.isEnd(info)) {
+	for (auto action : actions)
+	{
+		if (last_state.isEnd(info))
+		{
 			throw "Finisher Build Error : Unexpected End";
 		}
 		CrafterCore::DeterministicExecuteAction(info, &last_state, action, Condition::通常, true);

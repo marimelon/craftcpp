@@ -1,7 +1,8 @@
 #pragma once
 #include <vector>
 
-enum class Action : int {
+enum class Action : int
+{
     作業,
     加工,
     マスターズメンド,

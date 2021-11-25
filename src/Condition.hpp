@@ -3,7 +3,8 @@
 
 #include "magic_enum.hpp"
 
-enum class Condition : int {
+enum class Condition : int
+{
     通常 = 1,
     高品質,
     最高品質,

@@ -56,14 +56,21 @@ PYBIND11_MODULE(craftcpp, m)
 		.def(py::pickle(
 			[](const StatusEffectsMap &self)
 			{
-				return py::make_tuple(
-					self);
+				py::dict d;
+				for (const auto &[k, v] : self)
+				{
+					d[py::int_{int(k)}] = v;
+				}
+				return d;
 			},
-			[](py::tuple t)
+			[](py::dict t)
 			{
-				if (t.size() != 1)
-					throw std::runtime_error("Invalid state!");
-				return t[0].cast<StatusEffectsMap>();
+				auto self = StatusEffectsMap();
+				for (const auto &[k, v] : t)
+				{
+					self.insert({StatusEffect(k.cast<int>()), v.cast<int>()});
+				}
+				return self;
 			}));
 
 	py_enum<Condition>(m);

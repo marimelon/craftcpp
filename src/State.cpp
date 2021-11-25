@@ -12,8 +12,10 @@ std::string State::to_string()
     str += ", TU= " + std::to_string(this->turn);
     str += ", IQ= " + std::to_string(this->inner_quiet);
     str += ", BU= {";
-    for (const auto& [k, v] : this->buff) {
-        if (v > 0) {
+    for (const auto &[k, v] : this->buff)
+    {
+        if (v > 0)
+        {
             str += std::string(magic_enum::enum_name(k));
             str += ":" + std::to_string(v);
             str += ",";
@@ -23,17 +25,20 @@ std::string State::to_string()
     return str;
 }
 
-std::vector<Action> State::legal_actions(const CraftInfo& info)
+std::set<Action> State::legal_actions(const CraftInfo &info)
 {
-	auto result = std::vector<Action>();
-	for (const auto& [action, param] : CrafterCore::ALL_ACTIONS) {
-		if (std::find(info.illegal_actions.begin(), info.illegal_actions.end(), action) != info.illegal_actions.end()) {
-			continue;
-		}
-		if (!CrafterCore::CanExecuteAction(info, *this, action)) {
-			continue;
-		}
-		result.push_back(action);
-	}
-	return result;
+    auto result = std::set<Action>();
+    for (const auto &[action, param] : CrafterCore::ALL_ACTIONS)
+    {
+        if (std::find(info.illegal_actions.begin(), info.illegal_actions.end(), action) != info.illegal_actions.end())
+        {
+            continue;
+        }
+        if (!CrafterCore::CanExecuteAction(info, *this, action))
+        {
+            continue;
+        }
+        result.insert(action);
+    }
+    return result;
 }

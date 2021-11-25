@@ -3,23 +3,28 @@
 
 using SF = StatusEffect;
 
-bool CrafterCore::CanExecuteAction(const CraftInfo& craft_status, const State& state, const Action& action)
+bool CrafterCore::CanExecuteAction(const CraftInfo &craft_status, const State &state, const Action &action)
 {
 	// 使用可能なアクションか判定する
 
-	if (!std::none_of(craft_status.illegal_actions.begin(), craft_status.illegal_actions.end(), [action](Action x) { return x == action; })) {
+	if (!std::none_of(craft_status.illegal_actions.begin(), craft_status.illegal_actions.end(), [action](Action x)
+					  { return x == action; }))
+	{
 		return false;
 	}
 
-	if (state.durability == 0 || state.progress >= craft_status.max_progress) {
+	if (state.durability == 0 || state.progress >= craft_status.max_progress)
+	{
 		return false;
 	}
 
 	auto d_cp = ALL_ACTIONS[action].cp;
-	if (state.condition == Condition::高能率) {
+	if (state.condition == Condition::高能率)
+	{
 		d_cp = std::floor(d_cp / 2.0);
 	}
-	if (state.cp + d_cp < 0) {
+	if (state.cp + d_cp < 0)
+	{
 		return false;
 	}
 
@@ -45,18 +50,20 @@ bool CrafterCore::CanExecuteAction(const CraftInfo& craft_status, const State& s
 	return true;
 }
 
-void CrafterCore::ApplyCPDurabilityChange(const CraftInfo& craft_status, State* state, const Action& action)
+void CrafterCore::ApplyCPDurabilityChange(const CraftInfo &craft_status, State *state, const Action &action)
 {
 	// CP,耐久度の増減を処理する
 
 	auto action_parm = ALL_ACTIONS[action];
 	// CP
 	auto d_cp = action_parm.cp;
-	if (state->condition == Condition::高能率) {
+	if (state->condition == Condition::高能率)
+	{
 		d_cp = static_cast<int>(std::floor(d_cp / 2.));
 	}
 
-	if(state->buff.at(SF::加工) > 0 && action == Action::中級加工){
+	if (state->buff.at(SF::加工) > 0 && action == Action::中級加工)
+	{
 		d_cp = -18;
 	}
 
@@ -65,81 +72,96 @@ void CrafterCore::ApplyCPDurabilityChange(const CraftInfo& craft_status, State* 
 	// Durability
 	auto d_du = action_parm.durability;
 
-	if (d_du < 0 && state->condition == Condition::頑丈) {
+	if (d_du < 0 && state->condition == Condition::頑丈)
+	{
 		d_du = static_cast<int>(std::floor(d_du / 2.));
 	}
 
-	if (d_du < 0 && (state->buff.at(SF::倹約) > 0 || state->buff.at(SF::長期倹約) > 0)) {
+	if (d_du < 0 && (state->buff.at(SF::倹約) > 0 || state->buff.at(SF::長期倹約) > 0))
+	{
 		d_du = static_cast<int>(std::floor(d_du / 2.));
 	}
 	state->durability = std::min(craft_status.max_durability, state->durability + d_du);
 }
 
-void CrafterCore::ApplyProgressChange(const CraftInfo& craft_status, State* state, const Action& action)
+void CrafterCore::ApplyProgressChange(const CraftInfo &craft_status, State *state, const Action &action)
 {
 	// 工数を処理する
 
 	auto eff = ALL_ACTIONS[action].progress;
-	if (eff == 0) {
+	if (eff == 0)
+	{
 		return;
 	}
 
 	eff /= 100;
 
-	if (state->buff.at(SF::確信) > 0) {
+	if (state->buff.at(SF::確信) > 0)
+	{
 		eff *= 2.;
 		state->buff.at(SF::確信) = 0;
 	}
-	if (state->buff.at(SF::ヴェネレーション) > 0) {
+	if (state->buff.at(SF::ヴェネレーション) > 0)
+	{
 		eff *= 1.5;
 	}
 
-	if (state->condition == Condition::高進捗) {
+	if (state->condition == Condition::高進捗)
+	{
 		eff *= 1.5;
 	}
 
 	state->progress += std::floor(craft_status.base_progress * eff);
 
-	if (state->progress < craft_status.max_progress) {
+	if (state->progress < craft_status.max_progress)
+	{
 		return;
 	}
 
-	if (state->buff.at(SF::最終確認) > 0) {
+	if (state->buff.at(SF::最終確認) > 0)
+	{
 		state->progress = craft_status.max_progress - 1;
 		state->buff.at(SF::最終確認) = 0;
 	}
-	else {
+	else
+	{
 		state->progress = craft_status.max_progress;
 	}
 }
 
-void CrafterCore::ApplyQualityChange(const CraftInfo& craft_status, State* state, const Action& action)
+void CrafterCore::ApplyQualityChange(const CraftInfo &craft_status, State *state, const Action &action)
 {
 	// 品質を処理する
 
 	auto eff = ALL_ACTIONS[action].quality;
-	if (eff == 0) {
+	if (eff == 0)
+	{
 		return;
 	}
 
-	if (action == Action::ビエルゴの祝福) {
-		if (state->inner_quiet < 2) {
+	if (action == Action::ビエルゴの祝福)
+	{
+		if (state->inner_quiet < 2)
+		{
 			throw "インナークワイエット2以上必要";
 		}
 		eff = 1. + .2 * (state->inner_quiet - 1);
 	}
-	else {
+	else
+	{
 		eff = eff / 100.;
 	}
 
 	auto buff_multiplier = 1.;
 
-	if (state->buff.at(SF::グレートストライド)) {
+	if (state->buff.at(SF::グレートストライド))
+	{
 		buff_multiplier += 1.;
 		state->buff.at(SF::グレートストライド) = 0;
 	}
 
-	if (state->buff.at(SF::イノベーション)) {
+	if (state->buff.at(SF::イノベーション))
+	{
 		buff_multiplier += 0.5;
 	}
 
@@ -162,11 +184,12 @@ void CrafterCore::ApplyQualityChange(const CraftInfo& craft_status, State* state
 	state->quality += std::floor(craft_status.iq_table[state->inner_quiet] * eff * buff_multiplier);
 }
 
-void CrafterCore::ApplyInnerQuietChange(const CraftInfo& craft_status, State* state, const Action& action, bool is_action_successful)
+void CrafterCore::ApplyInnerQuietChange(const CraftInfo &craft_status, State *state, const Action &action, bool is_action_successful)
 {
 	// インナークワイエットを処理する
 
-	if (state->inner_quiet == 0) {
+	if (state->inner_quiet == 0)
+	{
 		return;
 	}
 
@@ -188,10 +211,12 @@ void CrafterCore::ApplyInnerQuietChange(const CraftInfo& craft_status, State* st
 		state->inner_quiet += 2;
 		break;
 	case Action::専心加工:
-		if (is_action_successful) {
+		if (is_action_successful)
+		{
 			state->inner_quiet *= 2;
 		}
-		else {
+		else
+		{
 			state->inner_quiet = std::ceil(state->inner_quiet / 2.);
 		}
 		break;
@@ -202,24 +227,27 @@ void CrafterCore::ApplyInnerQuietChange(const CraftInfo& craft_status, State* st
 	state->inner_quiet = std::min(11, state->inner_quiet);
 }
 
-void CrafterCore::ApplyPersistentBuffEffect(const CraftInfo& craft_status, State* state, const Action& action)
+void CrafterCore::ApplyPersistentBuffEffect(const CraftInfo &craft_status, State *state, const Action &action)
 {
 	// バフのターンを進める
 
-	if (state->buff.at(SF::マニピュレーション) > 0 && action != Action::マニピュレーション) {
+	if (state->buff.at(SF::マニピュレーション) > 0 && action != Action::マニピュレーション)
+	{
 		state->durability = std::min(craft_status.max_durability, state->durability + 5);
 	}
-	for (auto& [key, value] : state->buff) {
+	for (auto &[key, value] : state->buff)
+	{
 		value = std::max(0, value - 1);
 	}
 }
 
-void CrafterCore::ApplyBuffChange(const CraftInfo& craft_status, State* state, const Action& action)
+void CrafterCore::ApplyBuffChange(const CraftInfo &craft_status, State *state, const Action &action)
 {
 	// バフを付けるアクションの処理
 
 	int eff = 0;
-	if (state->condition == Condition::長持続) {
+	if (state->condition == Condition::長持続)
+	{
 		eff = 2;
 	}
 
@@ -260,102 +288,116 @@ void CrafterCore::ApplyBuffChange(const CraftInfo& craft_status, State* state, c
 	}
 }
 
-void CrafterCore::DeterministicExecuteAction(const CraftInfo& craft_status, State* state, const Action& action, const Condition next_condition, bool is_action_successful)
+void CrafterCore::DeterministicExecuteAction(const CraftInfo &craft_status, State *state, const Action &action, const Condition next_condition, bool is_action_successful)
 {
 	// ランダム性を排除したアクション処理
 
 	ApplyCPDurabilityChange(craft_status, state, action);
-	if (is_action_successful) {
+	if (is_action_successful)
+	{
 		ApplyProgressChange(craft_status, state, action);
 		ApplyQualityChange(craft_status, state, action);
 	}
 	ApplyInnerQuietChange(craft_status, state, action, is_action_successful);
 	ApplyPersistentBuffEffect(craft_status, state, action);
-	if (is_action_successful) {
+	if (is_action_successful)
+	{
 		ApplyBuffChange(craft_status, state, action);
 	}
 	state->condition = next_condition;
 	state->turn += 1;
 }
 
-Condition CrafterCore::RandomlyGenNextCondition(const CraftInfo& craft_status, const Condition condition)
+Condition CrafterCore::RandomlyGenNextCondition(const CraftInfo &craft_status, const Condition condition)
 {
 	// 次の状態をランダムに決定する
 
-	if (condition == Condition::最高品質) {
+	if (condition == Condition::最高品質)
+	{
 		return Condition::低品質;
 	}
 
-	std::array<float,all_conditions.size()> rates;
-	for (int i = 0; i < all_conditions.size(); i++) {
+	std::array<float, all_conditions.size()> rates;
+	for (int i = 0; i < all_conditions.size(); i++)
+	{
 		rates[i] = craft_status.condition_rates.at(all_conditions[i]);
 	}
 
 	return all_conditions[rnd.randRates(rates.begin(), rates.end())];
 }
 
-std::vector<Action> CrafterCore::AvailableActions(const CraftInfo& craft_status, const State& state)
+std::set<Action> CrafterCore::AvailableActions(const CraftInfo &craft_status, const State &state)
 {
 	// 使用可能なアクションを返す
 
-	auto result = std::vector<Action>();
-	for (auto& [key, value] : ALL_ACTIONS) {
-		if (CanExecuteAction(craft_status, state, key)) {
-			result.push_back(key);
+	auto result = std::set<Action>();
+	for (auto &[key, value] : ALL_ACTIONS)
+	{
+		if (CanExecuteAction(craft_status, state, key))
+		{
+			result.insert(key);
 		}
 	}
 	return result;
 }
 
-float CrafterCore::SuccessProbability(const State& state,Action action) 
+float CrafterCore::SuccessProbability(const State &state, Action action)
 {
 	// アクション成功確率の計算
 
 	auto parcentage = ALL_ACTIONS[action].rate;
-	if (state.condition == Condition::安定) {
+	if (state.condition == Condition::安定)
+	{
 		parcentage += 20;
 	}
-	if (state.buff.at(SF::経過観察) > 0 && (action == Action::注視作業 || action == Action::注視加工)) {
+	if (state.buff.at(SF::経過観察) > 0 && (action == Action::注視作業 || action == Action::注視加工))
+	{
 		parcentage = 100;
 	}
 	parcentage = std::min(100, parcentage);
 	return parcentage < 100 ? rnd.randBool(parcentage / 100.) : 1;
 }
 
-std::map<Condition,float> CrafterCore::ConditionProbability(const CraftInfo& craft_status, const State& state) 
+std::map<Condition, float> CrafterCore::ConditionProbability(const CraftInfo &craft_status, const State &state)
 {
 	// 次状態の確率を取得
 
-	if (state.condition == Condition::最高品質) {
-		return std::map<Condition, float> { {Condition::低品質, 1} };
+	if (state.condition == Condition::最高品質)
+	{
+		return std::map<Condition, float>{{Condition::低品質, 1}};
 	}
 
 	auto total = 0.f;
-	for (const auto& [con, p] : craft_status.condition_rates) {
+	for (const auto &[con, p] : craft_status.condition_rates)
+	{
 		total += p;
 	}
 
 	auto P = std::map<Condition, float>();
-	for (const auto& [con,p] : craft_status.condition_rates) {
-		if (p > 0) {
-			P.insert({ con, p / total });
+	for (const auto &[con, p] : craft_status.condition_rates)
+	{
+		if (p > 0)
+		{
+			P.insert({con, p / total});
 		}
 	}
 	return P;
 }
 
-State CrafterCore::ExecuteAction(const CraftInfo& craft_status, State state, Action action)
+State CrafterCore::ExecuteAction(const CraftInfo &craft_status, State state, Action action)
 {
 	// アクションを実行する
 
-	if (CanExecuteAction(craft_status, state, action) == false) {
+	if (CanExecuteAction(craft_status, state, action) == false)
+	{
 		throw "Can't ExecuteAction";
 	}
 
 	auto P = SuccessProbability(state, action);
 	auto is_action_successful = P < 1 ? rnd.randBool(P) : true;
 
-	if (action == Action::設計変更) {
+	if (action == Action::設計変更)
+	{
 		state.設計変更Count += 1;
 	}
 

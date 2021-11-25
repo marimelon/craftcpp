@@ -2,7 +2,8 @@
 
 #include "magic_enum.hpp"
 
-enum class StatusEffect:int {
+enum class StatusEffect : int
+{
     初手,
     グレートストライド,
     イノベーション,
