@@ -188,11 +188,6 @@ void CrafterCore::ApplyInnerQuietChange(const CraftInfo &craft_status, State *st
 {
 	// インナークワイエットを処理する
 
-	if (state->inner_quiet == 0)
-	{
-		return;
-	}
-
 	switch (action)
 	{
 	case Action::加工:
@@ -201,23 +196,34 @@ void CrafterCore::ApplyInnerQuietChange(const CraftInfo &craft_status, State *st
 	case Action::倹約加工:
 	case Action::注視加工:
 	case Action::精密作業:
-		state->inner_quiet += 1;
+		if (state->inner_quiet > 0) {
+			state->inner_quiet += 1;
+		}
 		break;
 	case Action::ビエルゴの祝福:
 		state->inner_quiet = 0;
 		break;
 	case Action::集中加工:
 	case Action::下地加工:
-		state->inner_quiet += 2;
+		if (state->inner_quiet > 0) {
+			state->inner_quiet += 2;
+		}
 		break;
 	case Action::専心加工:
-		if (is_action_successful)
-		{
-			state->inner_quiet *= 2;
+		if (state->inner_quiet > 0) {
+			if (is_action_successful)
+			{
+				state->inner_quiet *= 2;
+			}
+			else
+			{
+				state->inner_quiet = std::ceil(state->inner_quiet / 2.);
+			}
 		}
-		else
-		{
-			state->inner_quiet = std::ceil(state->inner_quiet / 2.);
+		break;
+	case Action::インナークワイエット:
+		if (state->inner_quiet == 0) {
+			state->inner_quiet = 1;
 		}
 		break;
 	case Action::真価:
