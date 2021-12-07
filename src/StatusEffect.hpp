@@ -15,7 +15,9 @@ enum class StatusEffect : int
     最終確認,
     アートオブエレメンタル,
     ヴェネレーション,
-    加工
+    加工,
+    中級加工,
+    一心不乱,
 };
 
 constexpr auto StatusEffectsCount = magic_enum::enum_count<StatusEffect>();

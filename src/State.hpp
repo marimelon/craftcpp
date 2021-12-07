@@ -35,6 +35,7 @@ struct State
 		{StatusEffect::加工, 0}};
 
 	int 設計変更Count = 0;
+	int 一心不乱Count = 0;
 	int inner_quiet = 0;
 
 	State() {}

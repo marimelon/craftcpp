@@ -30,21 +30,29 @@ bool CrafterCore::CanExecuteAction(const CraftInfo &craft_status, const State &s
 
 	switch (action)
 	{
-	case Action::インナークワイエット:
-		return state.inner_quiet == 0;
 	case Action::秘訣:
 	case Action::集中加工:
 	case Action::集中作業:
-		return state.condition == Condition::高品質 || state.condition == Condition::最高品質;
+		if (state.condition == Condition::高品質 || state.condition == Condition::最高品質) {
+			return true;
+		}
+		if (state.buff.at(SF::一心不乱) > 0) {
+			return true;
+		}
 	case Action::倹約加工:
+	case Action::倹約作業:
 		return state.buff.at(StatusEffect::倹約) == 0 && state.buff.at(StatusEffect::長期倹約) == 0;
 	case Action::ビエルゴの祝福:
-		return state.inner_quiet > 1;
+		return state.inner_quiet >= 1;
 	case Action::真価:
 	case Action::確信:
 		return state.buff.at(StatusEffect::初手) != 0;
+	case Action::匠の神業:
+		return state.inner_quiet == 10;
 	case Action::設計変更:
 		return state.設計変更Count < 3;
+	case Action::一心不乱:
+		return state.一心不乱Count == 0;
 	}
 
 	return true;
@@ -63,6 +71,11 @@ void CrafterCore::ApplyCPDurabilityChange(const CraftInfo &craft_status, State *
 	}
 
 	if (state->buff.at(SF::加工) > 0 && action == Action::中級加工)
+	{
+		d_cp = -18;
+	}
+
+	if (state->buff.at(SF::中級加工) > 0 && action == Action::上級加工) 
 	{
 		d_cp = -18;
 	}
@@ -141,9 +154,9 @@ void CrafterCore::ApplyQualityChange(const CraftInfo &craft_status, State *state
 
 	if (action == Action::ビエルゴの祝福)
 	{
-		if (state->inner_quiet < 2)
+		if (state->inner_quiet < 1)
 		{
-			throw "インナークワイエット2以上必要";
+			throw "インナークワイエット1以上必要";
 		}
 		eff = 1. + .2 * (state->inner_quiet - 1);
 	}
@@ -196,41 +209,19 @@ void CrafterCore::ApplyInnerQuietChange(const CraftInfo &craft_status, State *st
 	case Action::倹約加工:
 	case Action::注視加工:
 	case Action::精密作業:
-		if (state->inner_quiet > 0) {
-			state->inner_quiet += 1;
-		}
+	case Action::上級加工:
+		state->inner_quiet += 1;
 		break;
 	case Action::ビエルゴの祝福:
 		state->inner_quiet = 0;
 		break;
 	case Action::集中加工:
 	case Action::下地加工:
-		if (state->inner_quiet > 0) {
-			state->inner_quiet += 2;
-		}
-		break;
-	case Action::専心加工:
-		if (state->inner_quiet > 0) {
-			if (is_action_successful)
-			{
-				state->inner_quiet *= 2;
-			}
-			else
-			{
-				state->inner_quiet = std::ceil(state->inner_quiet / 2.);
-			}
-		}
-		break;
-	case Action::インナークワイエット:
-		if (state->inner_quiet == 0) {
-			state->inner_quiet = 1;
-		}
-		break;
 	case Action::真価:
-		state->inner_quiet = 3;
+		state->inner_quiet += 2;
 		break;
 	}
-	state->inner_quiet = std::min(11, state->inner_quiet);
+	state->inner_quiet = std::min(10, state->inner_quiet);
 }
 
 void CrafterCore::ApplyPersistentBuffEffect(const CraftInfo &craft_status, State *state, const Action &action)
@@ -259,6 +250,16 @@ void CrafterCore::ApplyBuffChange(const CraftInfo &craft_status, State *state, c
 
 	switch (action)
 	{
+	case Action::秘訣:
+	case Action::集中加工:
+	case Action::集中作業:
+		if (!(state->condition == Condition::高品質 || state->condition == Condition::最高品質)) {
+			state->buff.at(SF::一心不乱) = 0;
+		}
+		break;
+	case Action::加工:
+		state->buff.at(SF::加工) = 1;
+		break;
 	case Action::経過観察:
 		state->buff.at(SF::経過観察) = 1;
 		break;
@@ -269,14 +270,14 @@ void CrafterCore::ApplyBuffChange(const CraftInfo &craft_status, State *state, c
 	case Action::ヴェネレーション:
 		state->buff.at(SF::ヴェネレーション) = 4 + eff;
 		break;
+	case Action::中級加工:
+		state->buff.at(SF::中級加工) = 1;
+		break;
 	case Action::グレートストライド:
 		state->buff.at(SF::グレートストライド) = 3 + eff;
 		break;
 	case Action::イノベーション:
 		state->buff.at(SF::イノベーション) = 4 + eff;
-		break;
-	case Action::アートオブエレメンタル:
-		state->buff.at(SF::アートオブエレメンタル) = 3 + eff;
 		break;
 	case Action::最終確認:
 		state->buff.at(SF::最終確認) = 5 + eff;
@@ -290,6 +291,9 @@ void CrafterCore::ApplyBuffChange(const CraftInfo &craft_status, State *state, c
 		break;
 	case Action::マニピュレーション:
 		state->buff.at(SF::マニピュレーション) = 8 + eff;
+		break;
+	case Action::一心不乱:
+		state->buff.at(SF::一心不乱) = 1000;
 		break;
 	}
 }
@@ -405,6 +409,10 @@ State CrafterCore::ExecuteAction(const CraftInfo &craft_status, State state, Act
 	if (action == Action::設計変更)
 	{
 		state.設計変更Count += 1;
+	}
+
+	if (action == Action::一心不乱) {
+		state.一心不乱Count += 1;
 	}
 
 	auto next_condition = RandomlyGenNextCondition(craft_status, state.condition);
