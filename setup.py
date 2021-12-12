@@ -116,18 +116,31 @@ class CMakeBuild(build_ext):
             ["cmake", "--build", "."] + build_args, cwd=self.build_temp
         )
 
+        # Generate Stub
+        env = os.environ
+        env["PYTHONPATH"] = extdir
+        subprocess.check_call(
+            ["pybind11-stubgen", "craftcpp", "--no-setup-py",'--output-dir=.'],
+            cwd=extdir,
+            env=env
+        )
+
 
 # The information here can also be placed in setup.cfg - better separation of
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
-    name="craftcpp",
+    name="craftpy",
     version="0.0.1",
     author="marimelon",
     author_email="marimelon1414@gmail.com",
     description="A test project using pybind11 and CMake",
     long_description="",
-    ext_modules=[CMakeExtension("craftcpp")],
+    ext_modules=[CMakeExtension("craftpy.craftcpp")],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
     python_requires=">=3.8",
+    packages=["craftpy"],
+    package_data={
+        "craftcpp-stubs": ["*.pyi"],
+    },
 )
