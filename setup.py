@@ -1,7 +1,9 @@
 import os
 import re
+import shutil
 import subprocess
 import sys
+from pathlib import PurePath
 
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
@@ -120,9 +122,13 @@ class CMakeBuild(build_ext):
         env = os.environ
         env["PYTHONPATH"] = extdir
         subprocess.check_call(
-            ["pybind11-stubgen", "craftcpp", "--no-setup-py",'--output-dir=.'],
-            cwd=extdir,
-            env=env
+            ["pybind11-stubgen", "craftcpp", "--output-dir=."],
+            cwd=self.build_temp,
+            env=env,
+        )
+        shutil.move(
+            PurePath(self.build_temp) / "craftcpp-stubs" / "__init__.pyi",
+            PurePath(extdir) / "craftcpp.pyi",
         )
 
 
