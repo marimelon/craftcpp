@@ -29,28 +29,36 @@ jobs:
     - name: Add requirements
       run: python -m pip install --upgrade wheel setuptools pybind11-stubgen
 
-    - name: Build and install
-      run: pip install --verbose .[test]
+    - name: Build
+      run: python setup.py bdist_wheel
       env:
         CC:  clang-12
         CXX: clang++-12
-
-    - name: Generate stubs
-      run: |
-        cd ./build/lib.*
-        pybind11-stubgen craftcpp --no-setup-py --output-dir="."
-        mv ./*-stubs/__init__.pyi ./craftcpp.pyi
-      env:
-        PYTHONPATH: .
         PYTHONUTF8: 1
-
-    - name: Move artifact
-      run: |
-        mkdir artifact
-        mv ./build/lib.*/* ./artifact
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
         name: craftcpp
-        path: artifact/*
+        path: dist/*
+
+  upload-wheel:
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+          name: craftcpp
+          path: dist
+    
+    - name: Publish package to Private Repository
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: ${{ secrets.PYPI_USER }}
+        password: ${{ secrets.PYPI_PASSWORD }}
+        repository_url: ${{ secrets.PYPI_URL }}
