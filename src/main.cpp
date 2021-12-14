@@ -1,6 +1,5 @@
 #include <iostream>
 #include <thread>
-#include <windows.h>
 
 #include "magic_enum.hpp"
 
@@ -22,8 +21,8 @@ int main()
 	craft_status.base_progress = 927; //作業効率100に対する作業増加値
 	craft_status.iq_table = std::array<int, 12>{647, 647, 807, 977, 1160, 1353, 1558, 1774, 2001, 2240, 2490, 2751};
 	craft_status.illegal_actions = {
-		AC::アートオブエレメンタル, AC::ブランドオブエレメンタル, AC::ヘイスティタッチ,
-		AC::匠の早業, AC::専心加工, AC::最終確認, AC::注視作業, AC::注視加工, AC::突貫作業, AC::経過観察, AC::設計変更};
+		AC::ヘイスティタッチ,
+		AC::匠の早業, AC::最終確認, AC::注視作業, AC::注視加工, AC::突貫作業, AC::経過観察, AC::設計変更};
 
 	craft_status.condition_rates[Condition::長持続] = 1;
 

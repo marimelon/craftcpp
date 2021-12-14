@@ -8,3 +8,4 @@ _generate/
 *env*
 .vs/
 .vscode/
+*.out

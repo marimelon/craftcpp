@@ -20,19 +20,7 @@ struct State
 	int durability = 0;
 	Condition condition = Condition::通常;
 	int turn = 0;
-	std::map<StatusEffect, int> buff = {
-		{StatusEffect::初手, 0},
-		{StatusEffect::グレートストライド, 0},
-		{StatusEffect::イノベーション, 0},
-		{StatusEffect::マニピュレーション, 0},
-		{StatusEffect::確信, 0},
-		{StatusEffect::倹約, 0},
-		{StatusEffect::長期倹約, 0},
-		{StatusEffect::経過観察, 0},
-		{StatusEffect::最終確認, 0},
-		{StatusEffect::アートオブエレメンタル, 0},
-		{StatusEffect::ヴェネレーション, 0},
-		{StatusEffect::加工, 0}};
+	std::map<StatusEffect, int> buff = {};
 
 	int 設計変更Count = 0;
 	int 一心不乱Count = 0;
@@ -43,6 +31,11 @@ struct State
 	State(const CraftInfo &info) : cp(info.max_cp),
 								   durability(info.max_durability)
 	{
+		for (auto val : magic_enum::enum_values<StatusEffect>())
+		{
+			this->buff.emplace(val, 0);
+		}
+
 		this->buff.at(StatusEffect::初手) = 1;
 	}
 
