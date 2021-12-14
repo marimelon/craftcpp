@@ -36,15 +36,26 @@ jobs:
         CXX: clang++-12
         PYTHONUTF8: 1
 
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: craftcpp
+        path: dist/*
+
+  upload-wheel:
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+          name: craftcpp
+    
     - name: Publish package to Private Repository
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: ${{ secrets.PYPI_USER }}
         password: ${{ secrets.PYPI_PASSWORD }}
         repository_url: ${{ secrets.PYPI_URL }}
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: craftcpp
-        path: dist/*
