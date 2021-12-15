@@ -33,10 +33,12 @@ bool CrafterCore::CanExecuteAction(const CraftInfo &craft_status, const State &s
 	case Action::秘訣:
 	case Action::集中加工:
 	case Action::集中作業:
-		if (state.condition == Condition::高品質 || state.condition == Condition::最高品質) {
+		if (state.condition == Condition::高品質 || state.condition == Condition::最高品質)
+		{
 			return true;
 		}
-		if (state.buff.at(SF::一心不乱) > 0) {
+		if (state.buff.at(SF::一心不乱) > 0)
+		{
 			return true;
 		}
 	case Action::倹約加工:
@@ -75,7 +77,7 @@ void CrafterCore::ApplyCPDurabilityChange(const CraftInfo &craft_status, State *
 		d_cp = -18;
 	}
 
-	if (state->buff.at(SF::中級加工) > 0 && action == Action::上級加工) 
+	if (state->buff.at(SF::中級加工) > 0 && action == Action::上級加工)
 	{
 		d_cp = -18;
 	}
@@ -165,6 +167,11 @@ void CrafterCore::ApplyQualityChange(const CraftInfo &craft_status, State *state
 		eff = eff / 100.;
 	}
 
+	if (state->inner_quiet > 0)
+	{
+		eff = eff * (1. + state->inner_quiet / 10);
+	}
+
 	auto buff_multiplier = 1.;
 
 	if (state->buff.at(SF::グレートストライド))
@@ -194,7 +201,7 @@ void CrafterCore::ApplyQualityChange(const CraftInfo &craft_status, State *state
 	}
 
 	//d = math.floor(self.iq_table[self.inner_quiet]*eff*buff_multiplier)
-	state->quality += std::floor(craft_status.iq_table[state->inner_quiet] * eff * buff_multiplier);
+	state->quality += state->quality += std::floor(craft_status.base_quality * eff * buff_multiplier);
 }
 
 void CrafterCore::ApplyInnerQuietChange(const CraftInfo &craft_status, State *state, const Action &action, bool is_action_successful)
@@ -253,7 +260,8 @@ void CrafterCore::ApplyBuffChange(const CraftInfo &craft_status, State *state, c
 	case Action::秘訣:
 	case Action::集中加工:
 	case Action::集中作業:
-		if (!(state->condition == Condition::高品質 || state->condition == Condition::最高品質)) {
+		if (!(state->condition == Condition::高品質 || state->condition == Condition::最高品質))
+		{
 			state->buff.at(SF::一心不乱) = 0;
 		}
 		break;
@@ -411,7 +419,8 @@ State CrafterCore::ExecuteAction(const CraftInfo &craft_status, State state, Act
 		state.設計変更Count += 1;
 	}
 
-	if (action == Action::一心不乱) {
+	if (action == Action::一心不乱)
+	{
 		state.一心不乱Count += 1;
 	}
 

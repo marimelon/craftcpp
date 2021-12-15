@@ -15,7 +15,7 @@ struct CraftInfo
 	int max_progress = 0;
 	int max_quality = 0;
 	int base_progress = 0; //作業効率100に対する作業増加値
-	std::array<int, 12> iq_table{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	int base_quality = 0;
 	std::vector<Action> illegal_actions = {};
 	std::map<Condition, float> condition_rates = {
 		{Condition::通常, 1.},
@@ -35,7 +35,7 @@ struct CraftInfo
 		std::optional<int> max_progress,
 		std::optional<int> max_quality,
 		std::optional<int> base_progress,
-		std::optional<std::array<int, 12>> iq_table,
+		std::optional<int> base_quality,
 		std::optional<std::vector<Action>> illegal_actions,
 		std::optional<std::map<Condition, float>> condition_rates)
 	{
@@ -59,9 +59,9 @@ struct CraftInfo
 		{
 			this->base_progress = base_progress.value();
 		}
-		if (iq_table.has_value())
+		if (base_quality.has_value())
 		{
-			this->iq_table = iq_table.value();
+			this->base_quality = base_quality.value();
 		}
 		if (illegal_actions.has_value())
 		{

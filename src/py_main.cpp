@@ -91,7 +91,7 @@ PYBIND11_MODULE(craftcpp, m)
 					self.max_progress,
 					self.max_quality,
 					self.base_progress,
-					self.iq_table,
+					self.base_quality,
 					self.illegal_actions,
 					self.condition_rates);
 			},
@@ -105,7 +105,7 @@ PYBIND11_MODULE(craftcpp, m)
 				s.max_progress = t[2].cast<int>();
 				s.max_quality = t[3].cast<int>();
 				s.base_progress = t[4].cast<int>();
-				s.iq_table = t[5].cast<std::array<int, 12>>();
+				s.base_quality = t[5].cast<int>();
 				s.illegal_actions = t[6].cast<std::vector<Action>>();
 				s.condition_rates = t[7].cast<std::map<Condition, float>>();
 				return s;
@@ -117,7 +117,7 @@ PYBIND11_MODULE(craftcpp, m)
 			 py::arg("max_progress") = py::none(),
 			 py::arg("max_quality") = py::none(),
 			 py::arg("base_progress") = py::none(),
-			 py::arg("iq_table") = py::none(),
+			 py::arg("base_quality") = py::none(),
 			 py::arg("illegal_actions") = py::none(),
 			 py::arg("condition_rates") = py::none())
 		.def_readwrite("max_cp", &CraftInfo::max_cp)
@@ -125,7 +125,7 @@ PYBIND11_MODULE(craftcpp, m)
 		.def_readwrite("max_progress", &CraftInfo::max_progress)
 		.def_readwrite("max_quality", &CraftInfo::max_quality)
 		.def_readwrite("base_progress", &CraftInfo::base_progress)
-		.def_readwrite("iq_table", &CraftInfo::iq_table)
+		.def_readwrite("base_quality", &CraftInfo::base_quality)
 		.def_readwrite("illegal_actions", &CraftInfo::illegal_actions)
 		.def_readwrite("condition_rates", &CraftInfo::condition_rates);
 
