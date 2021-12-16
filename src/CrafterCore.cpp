@@ -309,7 +309,7 @@ void CrafterCore::ApplyBuffChange(const CraftInfo &craft_status, State *state, c
 void CrafterCore::DeterministicExecuteAction(const CraftInfo &craft_status, State *state, const Action &action, const Condition next_condition, bool is_action_successful)
 {
 	// ランダム性を排除したアクション処理
-
+	
 	ApplyCPDurabilityChange(craft_status, state, action);
 	if (is_action_successful)
 	{
@@ -322,6 +322,17 @@ void CrafterCore::DeterministicExecuteAction(const CraftInfo &craft_status, Stat
 	{
 		ApplyBuffChange(craft_status, state, action);
 	}
+
+	if (action == Action::設計変更)
+	{
+		state->設計変更Count += 1;
+	}
+
+	if (action == Action::一心不乱)
+	{
+		state->一心不乱Count += 1;
+	}
+
 	state->condition = next_condition;
 	state->turn += 1;
 }
@@ -413,16 +424,6 @@ State CrafterCore::ExecuteAction(const CraftInfo &craft_status, State state, Act
 
 	auto P = SuccessProbability(state, action);
 	auto is_action_successful = P < 1 ? rnd.randBool(P) : true;
-
-	if (action == Action::設計変更)
-	{
-		state.設計変更Count += 1;
-	}
-
-	if (action == Action::一心不乱)
-	{
-		state.一心不乱Count += 1;
-	}
 
 	auto next_condition = RandomlyGenNextCondition(craft_status, state.condition);
 

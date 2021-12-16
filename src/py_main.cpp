@@ -145,6 +145,7 @@ PYBIND11_MODULE(craftcpp, m)
 					self.turn,
 					self.buff,
 					self.設計変更Count,
+					self.一心不乱Count,
 					self.inner_quiet);
 			},
 			[](py::tuple t)
@@ -160,7 +161,8 @@ PYBIND11_MODULE(craftcpp, m)
 				s.turn = t[5].cast<int>();
 				s.buff = t[6].cast<StatusEffectsMap>();
 				s.設計変更Count = t[7].cast<int>();
-				s.inner_quiet = t[8].cast<int>();
+				s.一心不乱Count = t[8].cast<int>();
+				s.inner_quiet = t[9].cast<int>();
 				return s;
 			}))
 
@@ -183,6 +185,7 @@ PYBIND11_MODULE(craftcpp, m)
 		.def_readwrite("buff", &State::buff)
 		.def_readwrite("buffs", &State::buff)
 		.def_readwrite("設計変更Count", &State::設計変更Count)
+		.def_readwrite("一心不乱Count", &State::一心不乱Count)
 		.def_readwrite("inner_quiet", &State::inner_quiet);
 
 	py::class_<ActionParams>(m, "ActionParams")
