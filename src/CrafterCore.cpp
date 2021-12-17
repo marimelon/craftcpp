@@ -41,6 +41,7 @@ bool CrafterCore::CanExecuteAction(const CraftInfo &craft_status, const State &s
 		{
 			return true;
 		}
+		return false;
 	case Action::倹約加工:
 	case Action::倹約作業:
 		return state.buff.at(StatusEffect::倹約) == 0 && state.buff.at(StatusEffect::長期倹約) == 0;
