@@ -11,6 +11,7 @@ std::string State::to_string()
     str += ", CO= " + std::string(magic_enum::enum_name(this->condition));
     str += ", TU= " + std::to_string(this->turn);
     str += ", IQ= " + std::to_string(this->inner_quiet);
+    str += ", OP= " + std::to_string(this->設計変更Count) + "|" + std::to_string(this->一心不乱Count);
     str += ", BU= {";
     for (const auto &[k, v] : this->buff)
     {
