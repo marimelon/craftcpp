@@ -201,7 +201,11 @@ void CrafterCore::ApplyQualityChange(const CraftInfo &craft_status, State *state
 	}
 
 	//d = math.floor(self.iq_table[self.inner_quiet]*eff*buff_multiplier)
-	state->quality += state->quality += std::floor(craft_status.base_quality * eff * buff_multiplier);
+	state->quality += std::floor(craft_status.base_quality * eff * buff_multiplier);
+	if (state->quality > craft_status.max_quality)
+	{
+		state->quality = craft_status.max_quality;
+	}
 }
 
 void CrafterCore::ApplyInnerQuietChange(const CraftInfo &craft_status, State *state, const Action &action, bool is_action_successful)
@@ -309,7 +313,7 @@ void CrafterCore::ApplyBuffChange(const CraftInfo &craft_status, State *state, c
 void CrafterCore::DeterministicExecuteAction(const CraftInfo &craft_status, State *state, const Action &action, const Condition next_condition, bool is_action_successful)
 {
 	// ランダム性を排除したアクション処理
-	
+
 	ApplyCPDurabilityChange(craft_status, state, action);
 	if (is_action_successful)
 	{
@@ -332,7 +336,10 @@ void CrafterCore::DeterministicExecuteAction(const CraftInfo &craft_status, Stat
 	{
 		state->一心不乱Count += 1;
 	}
-
+	if (action == Action::設計変更 || action == Action::一心不乱)
+	{
+		return;
+	}
 	state->condition = next_condition;
 	state->turn += 1;
 }
