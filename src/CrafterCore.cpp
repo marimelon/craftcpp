@@ -19,6 +19,14 @@ bool CrafterCore::CanExecuteAction(const CraftInfo &craft_status, const State &s
 	}
 
 	auto d_cp = ALL_ACTIONS[action].cp;
+	if (state.buff.at(SF::加工) > 0 && action == Action::中級加工)
+	{
+		d_cp = -18;
+	}
+	if (state.buff.at(SF::中級加工) > 0 && action == Action::上級加工)
+	{
+		d_cp = -18;
+	}
 	if (state.condition == Condition::高能率)
 	{
 		d_cp = std::floor(d_cp / 2.0);
@@ -68,10 +76,6 @@ void CrafterCore::ApplyCPDurabilityChange(const CraftInfo &craft_status, State *
 	auto action_parm = ALL_ACTIONS[action];
 	// CP
 	auto d_cp = action_parm.cp;
-	if (state->condition == Condition::高能率)
-	{
-		d_cp = static_cast<int>(std::floor(d_cp / 2.));
-	}
 
 	if (state->buff.at(SF::加工) > 0 && action == Action::中級加工)
 	{
@@ -83,6 +87,11 @@ void CrafterCore::ApplyCPDurabilityChange(const CraftInfo &craft_status, State *
 		d_cp = -18;
 	}
 
+	if (state->condition == Condition::高能率)
+	{
+		d_cp = static_cast<int>(std::floor(d_cp / 2.));
+	}
+	
 	state->cp = std::min(craft_status.max_cp, state->cp + d_cp);
 
 	// Durability
