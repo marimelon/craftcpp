@@ -113,8 +113,10 @@ void CrafterCore::ApplyProgressChange(const CraftInfo &craft_status, State *stat
 {
 	// 工数を処理する
 
+	auto baseEff = ALL_ACTIONS[action].progress;
 	float eff = ALL_ACTIONS[action].progress;
-	if (eff == 0)
+	
+	if (baseEff == 0)
 	{
 		return;
 	}
@@ -124,17 +126,18 @@ void CrafterCore::ApplyProgressChange(const CraftInfo &craft_status, State *stat
 		eff /= 2;
 	}
 
-	eff /= 100.;
-
 	if (state->buff.at(SF::確信) > 0)
 	{
-		eff *= 2.;
+		eff += baseEff*1.;
 		state->buff.at(SF::確信) = 0;
 	}
+
 	if (state->buff.at(SF::ヴェネレーション) > 0)
 	{
-		eff *= 1.5;
+		eff += baseEff*0.5;
 	}
+
+	eff /= 100.;
 
 	if (state->condition == Condition::高進捗)
 	{
