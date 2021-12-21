@@ -113,7 +113,7 @@ void CrafterCore::ApplyProgressChange(const CraftInfo &craft_status, State *stat
 {
 	// 工数を処理する
 
-	auto eff = ALL_ACTIONS[action].progress;
+	float eff = ALL_ACTIONS[action].progress;
 	if (eff == 0)
 	{
 		return;
@@ -124,7 +124,7 @@ void CrafterCore::ApplyProgressChange(const CraftInfo &craft_status, State *stat
 		eff /= 2;
 	}
 
-	eff /= 100;
+	eff /= 100.;
 
 	if (state->buff.at(SF::確信) > 0)
 	{
@@ -163,7 +163,7 @@ void CrafterCore::ApplyQualityChange(const CraftInfo &craft_status, State *state
 {
 	// 品質を処理する
 
-	auto eff = ALL_ACTIONS[action].quality;
+	float eff = ALL_ACTIONS[action].quality;
 	if (eff == 0)
 	{
 		return;
@@ -189,7 +189,7 @@ void CrafterCore::ApplyQualityChange(const CraftInfo &craft_status, State *state
 
 	if (state->inner_quiet > 0)
 	{
-		eff = eff * (1. + state->inner_quiet / 10);
+		eff = eff * (1. + state->inner_quiet / 10.);
 	}
 
 	auto buff_multiplier = 1.;
