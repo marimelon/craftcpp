@@ -91,7 +91,7 @@ void CrafterCore::ApplyCPDurabilityChange(const CraftInfo &craft_status, State *
 	{
 		d_cp = static_cast<int>(std::floor(d_cp / 2.));
 	}
-	
+
 	state->cp = std::min(craft_status.max_cp, state->cp + d_cp);
 
 	// Durability
@@ -117,6 +117,11 @@ void CrafterCore::ApplyProgressChange(const CraftInfo &craft_status, State *stat
 	if (eff == 0)
 	{
 		return;
+	}
+
+	if (action == Action::下地作業 && state->durability < 0)
+	{
+		eff /= 2;
 	}
 
 	eff /= 100;
@@ -162,6 +167,11 @@ void CrafterCore::ApplyQualityChange(const CraftInfo &craft_status, State *state
 	if (eff == 0)
 	{
 		return;
+	}
+
+	if (action == Action::下地加工 && state->durability < 0)
+	{
+		eff /= 2;
 	}
 
 	if (action == Action::ビエルゴの祝福)
