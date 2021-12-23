@@ -234,7 +234,10 @@ void CrafterCore::ApplyQualityChange(const CraftInfo &craft_status, State *state
 void CrafterCore::ApplyInnerQuietChange(const CraftInfo &craft_status, State *state, const Action &action, bool is_action_successful)
 {
 	// インナークワイエットを処理する
-
+	if(!is_action_successful){
+		return;
+	}
+	
 	switch (action)
 	{
 	case Action::加工:
