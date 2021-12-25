@@ -115,7 +115,7 @@ void CrafterCore::ApplyProgressChange(const CraftInfo &craft_status, State *stat
 
 	auto baseEff = ALL_ACTIONS[action].progress;
 	float eff = ALL_ACTIONS[action].progress;
-	
+
 	if (baseEff == 0)
 	{
 		return;
@@ -128,13 +128,13 @@ void CrafterCore::ApplyProgressChange(const CraftInfo &craft_status, State *stat
 
 	if (state->buff.at(SF::確信) > 0)
 	{
-		eff += baseEff*1.;
+		eff += baseEff * 1.;
 		state->buff.at(SF::確信) = 0;
 	}
 
 	if (state->buff.at(SF::ヴェネレーション) > 0)
 	{
-		eff += baseEff*0.5;
+		eff += baseEff * 0.5;
 	}
 
 	eff /= 100.;
@@ -234,10 +234,11 @@ void CrafterCore::ApplyQualityChange(const CraftInfo &craft_status, State *state
 void CrafterCore::ApplyInnerQuietChange(const CraftInfo &craft_status, State *state, const Action &action, bool is_action_successful)
 {
 	// インナークワイエットを処理する
-	if(!is_action_successful){
+	if (!is_action_successful)
+	{
 		return;
 	}
-	
+
 	switch (action)
 	{
 	case Action::加工:
@@ -271,6 +272,10 @@ void CrafterCore::ApplyPersistentBuffEffect(const CraftInfo &craft_status, State
 	}
 	for (auto &[key, value] : state->buff)
 	{
+		if (key == SF::一心不乱)
+		{
+			continue;
+		}
 		value = std::max(0, value - 1);
 	}
 }
@@ -331,7 +336,7 @@ void CrafterCore::ApplyBuffChange(const CraftInfo &craft_status, State *state, c
 		state->buff.at(SF::マニピュレーション) = 8 + eff;
 		break;
 	case Action::一心不乱:
-		state->buff.at(SF::一心不乱) = 1000;
+		state->buff.at(SF::一心不乱) = 1;
 		break;
 	}
 }
