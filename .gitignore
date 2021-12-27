@@ -9,3 +9,5 @@ _generate/
 .vs/
 .vscode/
 *.out
+.pytest_cache/
+__pycache__/
