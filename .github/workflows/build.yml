@@ -37,9 +37,16 @@ jobs:
         CXX: clang++-12
         PYTHONUTF8: 1
 
+    - name: Install for Linux
+      if: runner.os == 'Linux'
+      run: python -m pip install dist/*.whl
+
+    - name: Install for Windows
+      if: runner.os == 'Windows'
+      run: python -m pip install (Get-Item ./dist/*.whl)
+
     - name: Test
-      run: python -m pytest
-      working-directory: ./tests
+      run: pytest --import-mode=importlib
 
     - name: Upload artifact
       uses: actions/upload-artifact@v2
