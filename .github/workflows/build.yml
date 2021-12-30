@@ -39,8 +39,8 @@ jobs:
 
     - name: Test
       run: python -m pytest
-      working-directory: ../
-      
+      working-directory: ./tests
+
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
