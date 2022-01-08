@@ -26,7 +26,7 @@ struct State
 	int 一心不乱Count = 0;
 	int inner_quiet = 0;
 
-	State() {}
+	State() : State(CraftInfo()) {}
 
 	State(const CraftInfo &info) : cp(info.max_cp),
 								   durability(info.max_durability)
