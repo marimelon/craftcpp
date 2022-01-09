@@ -58,14 +58,19 @@ def test_normal_actions():
         m.craftcpp.Action.匠の早業: (-250, 0, 0, 0),
         m.craftcpp.Action.上級加工: (-46, 0, 150, -10),
         m.craftcpp.Action.倹約作業: (-18, 180, 0, -5),
-        # m.craftcpp.Action.匠の神業: (-32,0, 0, 0),
+        # 匠の神業はIQ10スタックでしか使用できないため+100する
+        m.craftcpp.Action.匠の神業: (-32, 0, 100+100, 0),
         m.craftcpp.Action.設計変更: (0, 0, 0, 0),
         m.craftcpp.Action.一心不乱: (0, 0, 0, 0),
     }
 
     for action, correct in corrects.items():
         s = m.craftcpp.State(env)
-        assert m.craftcpp.CrafterCore.CanExecuteAction(env, s, action), f"state = {s}"
+        if action == m.craftcpp.Action.匠の神業:
+            s.inner_quiet = 10
+
+        assert m.craftcpp.CrafterCore.CanExecuteAction(
+            env, s, action), f"state = {s}"
         m.craftcpp.CrafterCore.DeterministicExecuteAction(
             env, s, action, m.craftcpp.Condition.通常, True
         )
@@ -174,7 +179,8 @@ def test_status_effect_effect():
 
     # 一心不乱
     s = m.craftcpp.State(env)
-    core.DeterministicExecuteAction(env, s, ac.一心不乱, m.craftcpp.Condition.通常, True)
+    core.DeterministicExecuteAction(
+        env, s, ac.一心不乱, m.craftcpp.Condition.通常, True)
     assert (
         s.condition == m.craftcpp.Condition.通常
         and m.craftcpp.CrafterCore.CanExecuteAction(env, s, ac.秘訣) == True
@@ -195,8 +201,9 @@ def test_status_effect_effect():
 
 
 def test_condition_can_action():
-    # 高品質時のみ利用可能なアクションのテスト
+    # 特定条件下でのみ利用可能なアクションのテスト
 
+    # 高品質時
     env = get_default_env()
 
     actions = [
@@ -208,9 +215,18 @@ def test_condition_can_action():
 
     for action in actions:
         s = m.craftcpp.State(env)
-        assert m, craftcpp.CrafterCore.CanExecuteAction(env, s, action) == False
+        assert m, craftcpp.CrafterCore.CanExecuteAction(
+            env, s, action) == False
         s.condition = m.craftcpp.Condition.高品質
         assert m, craftcpp.CrafterCore.CanExecuteAction(env, s, action) == True
+
+    # 匠の神業
+    env = get_default_env()
+    action = m.craftcpp.Action.匠の神業
+    s = m.craftcpp.State(env)
+    assert m, craftcpp.CrafterCore.CanExecuteAction(env, s, action) == False
+    s.inner_quiet = 10
+    assert m, craftcpp.CrafterCore.CanExecuteAction(env, s, action) == True
 
 
 def test_equal():
@@ -229,6 +245,7 @@ def test_equal():
     assert s1 == s2
     s1.cp += 1
     assert s1 != s2
+
 
 def test_pickles():
     # pickle化のテスト
