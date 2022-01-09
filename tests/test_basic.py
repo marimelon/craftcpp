@@ -211,3 +211,37 @@ def test_condition_can_action():
         assert m, craftcpp.CrafterCore.CanExecuteAction(env, s, action) == False
         s.condition = m.craftcpp.Condition.高品質
         assert m, craftcpp.CrafterCore.CanExecuteAction(env, s, action) == True
+
+
+def test_equal():
+    # 等価演算子のテスト
+
+    # CraftInfo
+    info1 = m.craftcpp.CraftInfo()
+    info2 = m.craftcpp.CraftInfo()
+    assert info1 == info2
+    info1.max_cp += 1
+    assert info1 != info2
+
+    # State
+    s1 = m.craftcpp.State()
+    s2 = m.craftcpp.State()
+    assert s1 == s2
+    s1.cp += 1
+    assert s1 != s2
+
+def test_pickles():
+    # pickle化のテスト
+    import pickle
+
+    # CraftInfo
+    info = m.craftcpp.CraftInfo()
+    pickled = pickle.dumps(info)
+    unpickled = pickle.loads(pickled)
+    assert info == unpickled
+
+    # State
+    state = m.craftcpp.State()
+    pickled = pickle.dumps(state)
+    unpickled = pickle.loads(pickled)
+    assert state == unpickled

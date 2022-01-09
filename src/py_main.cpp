@@ -110,7 +110,8 @@ PYBIND11_MODULE(craftcpp, m)
 				s.condition_rates = t[7].cast<std::map<Condition, float>>();
 				return s;
 			}))
-
+		.def(pybind11::self == pybind11::self)
+		.def(pybind11::self != pybind11::self)
 		.def("set", &CraftInfo::set,
 			 py::arg("max_cp") = py::none(),
 			 py::arg("max_durability") = py::none(),
@@ -132,6 +133,9 @@ PYBIND11_MODULE(craftcpp, m)
 	py::class_<State>(m, "State")
 		.def(py::init<>())
 		.def(py::init<const CraftInfo &>())
+		
+		.def(pybind11::self == pybind11::self)
+		.def(pybind11::self != pybind11::self)
 
 		.def(py::pickle(
 			[](const State &self)
@@ -150,7 +154,7 @@ PYBIND11_MODULE(craftcpp, m)
 			},
 			[](py::tuple t)
 			{
-				if (t.size() != 9)
+				if (t.size() != 10)
 					throw std::runtime_error("Invalid state!");
 				auto s = State();
 				s.cp = t[0].cast<int>();

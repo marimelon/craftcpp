@@ -29,6 +29,31 @@ struct CraftInfo
 		{Condition::長持続, 0.},
 	};
 
+	bool operator==(const CraftInfo &rhs) const
+	{
+		return this->max_cp == rhs.max_cp &&
+			   this->max_durability == rhs.max_durability &&
+			   this->max_progress == rhs.max_progress &&
+			   this->max_quality == rhs.max_quality &&
+			   this->base_progress == rhs.base_progress &&
+			   this->base_quality == rhs.base_quality &&
+			   std::equal(
+				   std::begin(this->illegal_actions),
+				   std::end(this->illegal_actions),
+				   std::begin(rhs.illegal_actions),
+				   std::end(rhs.illegal_actions)) &&
+			   std::equal(
+				   std::begin(this->condition_rates),
+				   std::end(this->condition_rates),
+				   std::begin(rhs.condition_rates),
+				   std::end(rhs.condition_rates));
+	}
+
+	inline bool operator!=(const CraftInfo &rhs) const
+	{
+		return !(*this == rhs);
+	}
+
 	auto set(
 		std::optional<int> max_cp,
 		std::optional<int> max_durability,

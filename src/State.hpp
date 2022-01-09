@@ -39,6 +39,29 @@ struct State
 		this->buff.at(StatusEffect::初手) = 1;
 	}
 
+	bool operator==(const State &rhs) const
+	{
+		return this->cp == rhs.cp &&
+			   this->progress == rhs.progress &&
+			   this->quality == rhs.quality &&
+			   this->durability == rhs.durability &&
+			   this->condition == rhs.condition &&
+			   this->turn == rhs.turn &&
+			   std::equal(
+				   std::begin(this->buff),
+				   std::end(this->buff),
+				   std::begin(rhs.buff),
+				   std::end(rhs.buff)) &&
+			   this->設計変更Count == rhs.設計変更Count &&
+			   this->一心不乱Count == rhs.一心不乱Count &&
+			   this->inner_quiet == rhs.inner_quiet;
+	}
+
+	inline bool operator!=(const State &rhs) const
+	{
+		return !(*this == rhs);
+	}
+
 	bool isEnd(const CraftInfo &info)
 	{
 		return (this->progress >= info.max_progress || this->durability <= 0);
