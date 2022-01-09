@@ -4,7 +4,7 @@ Finisher::Finisher(const CraftInfo info, const std::vector<Action> actions) : ac
 {
 	auto first_state = State(info);
 	first_state.buff.at(StatusEffect::初手) = 0;
-	first_state.inner_quiet = 11;
+	first_state.inner_quiet = 10;
 	auto last_state = first_state;
 	for (auto action : actions)
 	{

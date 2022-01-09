@@ -52,7 +52,7 @@ def check_finisher_pattern(state: State, FINISHERS: List[Finisher]):
             and state.quality >= quality
         )
 
-    if not state.inner_quiet == 11:
+    if not state.inner_quiet == 10:
         return None
 
     for i, finisher in enumerate(FINISHERS):
