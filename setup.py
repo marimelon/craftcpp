@@ -136,7 +136,7 @@ class CMakeBuild(build_ext):
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
     name="craftpy",
-    version="0.0.17",
+    version="0.0.18",
     author="marimelon",
     author_email="marimelon1414@gmail.com",
     description="A test project using pybind11 and CMake",
@@ -145,6 +145,7 @@ setup(
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
     python_requires=">=3.8",
+    setup_requires=["pybind11-stubgen"],
     packages=["craftpy"],
     package_data={
         "craftcpp-stubs": ["*.pyi"],
