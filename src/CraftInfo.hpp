@@ -14,7 +14,7 @@ struct CraftInfo
 	int max_durability = 0;
 	int max_progress = 0;
 	int max_quality = 0;
-	int base_progress = 0; //作業効率100に対する作業増加値
+	int base_progress = 0; // 作業効率100に対する作業増加値
 	int base_quality = 0;
 	std::vector<Action> illegal_actions = {};
 	std::map<Condition, float> condition_rates = {
@@ -28,6 +28,16 @@ struct CraftInfo
 		{Condition::高進捗, 0.},
 		{Condition::長持続, 0.},
 	};
+
+	CraftInfo() = default;
+
+	CraftInfo(const CraftInfo &rhs) : max_cp{rhs.max_cp},
+									  max_durability{rhs.max_durability},
+									  max_progress{rhs.max_progress},
+									  base_progress{rhs.base_progress},
+									  base_quality{rhs.base_quality},
+									  illegal_actions{rhs.illegal_actions},
+									  condition_rates{rhs.condition_rates} {};
 
 	bool operator==(const CraftInfo &rhs) const
 	{

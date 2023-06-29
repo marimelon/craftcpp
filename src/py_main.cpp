@@ -81,7 +81,7 @@ PYBIND11_MODULE(craftcpp, m)
 
 	py::class_<CraftInfo>(m, "CraftInfo")
 		.def(py::init<>())
-
+		.def("copy", [](CraftInfo & self) -> auto { return self; }, py::return_value_policy::copy)
 		.def(py::pickle(
 			[](const CraftInfo &self)
 			{

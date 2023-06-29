@@ -64,6 +64,8 @@ bool CrafterCore::CanExecuteAction(const CraftInfo &craft_status, const State &s
 		return state.設計変更Count < 3;
 	case Action::一心不乱:
 		return state.一心不乱Count == 0;
+	default:
+		break;
 	}
 
 	return true;
@@ -258,6 +260,8 @@ void CrafterCore::ApplyInnerQuietChange(const CraftInfo &craft_status, State *st
 	case Action::真価:
 		state->inner_quiet += 2;
 		break;
+	default:
+		break;
 	}
 	state->inner_quiet = std::min(10, state->inner_quiet);
 }
@@ -337,6 +341,8 @@ void CrafterCore::ApplyBuffChange(const CraftInfo &craft_status, State *state, c
 		break;
 	case Action::一心不乱:
 		state->buff.at(SF::一心不乱) = 1;
+		break;
+	default:
 		break;
 	}
 }

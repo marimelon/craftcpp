@@ -67,5 +67,6 @@ int main()
 	auto str = states.back().to_string();
 	std::cout << str << std::endl;
 	auto finisher = Finisher(craft_status, {Action::加工, Action::作業});
+	
 	return 0;
 }

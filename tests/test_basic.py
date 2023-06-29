@@ -262,3 +262,15 @@ def test_pickles():
     pickled = pickle.dumps(state)
     unpickled = pickle.loads(pickled)
     assert state == unpickled
+
+def test_copy():
+    # オブジェクトコピーのテスト
+
+    # CraftInfo
+    info1 = m.craftcpp.CraftInfo()
+    info2 = info1.copy()
+
+    info1.max_cp += 1
+    assert info1.max_cp != info2.max_cp
+    assert info1 != info2
+    
