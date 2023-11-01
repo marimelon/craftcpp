@@ -127,7 +127,7 @@ class CMakeBuild(build_ext):
             env=env,
         )
         shutil.move(
-            PurePath(self.build_temp) / "craftcpp-stubs" / "__init__.pyi",
+            PurePath(self.build_temp) / "craftcpp.pyi",
             PurePath(extdir) / "craftcpp.pyi",
         )
 
