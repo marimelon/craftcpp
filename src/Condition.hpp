@@ -13,7 +13,8 @@ enum class Condition : int
     頑丈,
     高能率,
     高進捗,
-    長持続
+    長持続,
+    良兆候
 };
 
 constexpr auto all_conditions = magic_enum::enum_values<Condition>();

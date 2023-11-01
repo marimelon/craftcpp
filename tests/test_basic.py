@@ -274,3 +274,14 @@ def test_copy():
     assert info1.max_cp != info2.max_cp
     assert info1 != info2
     
+
+def test_condition_sequence():
+    # 品質状態変化のテスト
+    env = get_default_env()
+    core = m.craftcpp.CrafterCore
+    ac = m.craftcpp.Action
+
+    s = m.craftcpp.State(env)
+    s.condition = m.craftcpp.Condition.良兆候
+    s = core.ExecuteAction(env, s, ac.作業)
+    assert s.condition == m.craftcpp.Condition.高品質

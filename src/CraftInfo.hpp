@@ -27,6 +27,7 @@ struct CraftInfo
 		{Condition::高能率, 0.},
 		{Condition::高進捗, 0.},
 		{Condition::長持続, 0.},
+		{Condition::良兆候, 0.},
 	};
 
 	CraftInfo() = default;

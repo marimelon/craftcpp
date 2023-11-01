@@ -225,7 +225,7 @@ void CrafterCore::ApplyQualityChange(const CraftInfo &craft_status, State *state
 		break;
 	}
 
-	//d = math.floor(self.iq_table[self.inner_quiet]*eff*buff_multiplier)
+	// d = math.floor(self.iq_table[self.inner_quiet]*eff*buff_multiplier)
 	state->quality += std::floor(craft_status.base_quality * eff * buff_multiplier);
 	if (state->quality > craft_status.max_quality)
 	{
@@ -390,6 +390,11 @@ Condition CrafterCore::RandomlyGenNextCondition(const CraftInfo &craft_status, c
 		return Condition::低品質;
 	}
 
+	if (condition == Condition::良兆候)
+	{
+		return Condition::高品質;
+	}
+
 	std::array<float, all_conditions.size()> rates;
 	for (int i = 0; i < all_conditions.size(); i++)
 	{
@@ -438,6 +443,11 @@ std::map<Condition, float> CrafterCore::ConditionProbability(const CraftInfo &cr
 	if (state.condition == Condition::最高品質)
 	{
 		return std::map<Condition, float>{{Condition::低品質, 1}};
+	}
+
+	if (state.condition == Condition::良兆候)
+	{
+		return std::map<Condition, float>{{Condition::高品質, 1}};
 	}
 
 	auto total = 0.f;
