@@ -145,7 +145,7 @@ setup(
     ext_modules=[CMakeExtension("craftpy.craftcpp")],
     cmdclass={"build_ext": CMakeBuild},
     zip_safe=False,
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     setup_requires=["pybind11-stubgen"],
     packages=["craftpy"],
     package_data={

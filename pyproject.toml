@@ -19,6 +19,11 @@ filterwarnings = ["error"]
 testpaths = ["tests"]
 
 [tool.cibuildwheel]
+before-all = "rm -rf {project}/build"
+before-build = "python -m pip install --upgrade pybind11-stubgen"
+skip = ["*-win32", "*-manylinux_i686", "*musllinux*"]
+
+test-requires = "pytest"
 test-command = "pytest {project}/tests"
 test-extras = ["test"]
 test-skip = ["*universal2:arm64"]

@@ -4,8 +4,6 @@ on:
   workflow_dispatch:
   pull_request:
   push:
-    branches:
-      - master
 
 jobs:
   build:
@@ -13,57 +11,46 @@ jobs:
       fail-fast: false
       matrix:
         platform: [ubuntu-latest, windows-latest]
-        python-version: ["3.9", "3.10"]
           
     runs-on: ${{ matrix.platform }}
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
-    - uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+    - uses: actions/setup-python@v3
 
-    - name: Add requirements
-      run: python -m pip install --upgrade wheel setuptools pybind11-stubgen pytest
+    - name: Install cibuildwheel
+      run: python -m pip install cibuildwheel==2.16.2
 
-    - name: Build
-      run: python setup.py bdist_wheel
-      env:
-        CC:  clang-15
-        CXX: clang++-15
-        PYTHONUTF8: 1
+    - name: Build wheels
+      run: python -m cibuildwheel --output-dir wheelhouse
 
-    - name: Install for Linux
-      if: runner.os == 'Linux'
-      run: python -m pip install dist/*.whl
-
-    - name: Install for Windows
-      if: runner.os == 'Windows'
-      run: python -m pip install (Get-Item ./dist/*.whl)
-
-    - name: Test
-      run: pytest --import-mode=importlib
+    # - name: Build
+    #   run: python -m cibuildwheel --output-dir wheelhouse
+    #   env:
+    #     CIBW_BEFORE_BUILD: python -m pip install --upgrade pybind11-stubgen
+    #     PYTHONUTF8: 1
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: craftcpp
-        path: dist/*
+        path: ./wheelhouse/*.whl
 
   upload-wheel:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
     needs: [build]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: true
 
     - name: Download artifact
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
           name: craftcpp
           path: dist
