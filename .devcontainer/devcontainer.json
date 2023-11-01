@@ -1,0 +1,31 @@
+{
+    "name": "craftcpp",
+    "dockerFile": "./Dockerfile",
+    "customizations":{
+        "vscode": {
+            "extensions": [
+                "mhutchie.git-graph",
+                "mutantdino.resourcemonitor",
+                "ms-vscode.cpptools",
+                "github.vscode-github-actions",
+                "kdcro101.favorites"
+            ],
+            "settings": {}
+        }
+    },
+    "postStartCommand": "python -m pip install --upgrade wheel setuptools pybind11-stubgen pytest",
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "username": "automatic",
+            "uid": "automatic",
+            "gid": "automatic",
+            "installZsh": true,
+            "installOhMyZsh": true,
+            "upgradePackages": false,
+            "nonFreePackages": false
+        },
+        "ghcr.io/devcontainers/features/python:1": {
+            "version": "3.10.10"
+        }
+    }
+}

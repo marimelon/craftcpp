@@ -1,0 +1,12 @@
+version: '3'
+
+tasks:
+  build:
+    cmds:
+      - python setup.py bdist_wheel
+  install:
+    cmds:
+      - python -m pip install dist/*.whl
+  test:
+    cmds:
+      - pytest --import-mode=importlib
