@@ -252,7 +252,22 @@ def test_pickles():
     import pickle
 
     # CraftInfo
-    info = m.craftcpp.CraftInfo()
+    info = m.craftcpp.CraftInfo().set(
+        max_cp=688,
+        max_durability=60,
+        max_progress=6600,
+        max_quality=15368,
+        base_progress=225,
+        base_quality=261,
+        condition_rates={
+            m.craftcpp.Condition.通常: 0.42,
+            m.craftcpp.Condition.高品質: 0.5,
+            m.craftcpp.Condition.安定: 0.15,
+            m.craftcpp.Condition.頑丈: 0.15,
+            m.craftcpp.Condition.高能率: 0.13,
+            m.craftcpp.Condition.良兆候: 0.12,
+        },
+    )
     pickled = pickle.dumps(info)
     unpickled = pickle.loads(pickled)
     assert info == unpickled

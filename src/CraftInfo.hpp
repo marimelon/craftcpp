@@ -35,6 +35,7 @@ struct CraftInfo
 	CraftInfo(const CraftInfo &rhs) : max_cp{rhs.max_cp},
 									  max_durability{rhs.max_durability},
 									  max_progress{rhs.max_progress},
+									  max_quality{rhs.max_quality},
 									  base_progress{rhs.base_progress},
 									  base_quality{rhs.base_quality},
 									  illegal_actions{rhs.illegal_actions},
