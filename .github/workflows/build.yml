@@ -16,11 +16,11 @@ jobs:
     timeout-minutes: 20
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         submodules: true
 
-    - uses: actions/setup-python@v3
+    - uses: actions/setup-python@v6
 
     - name: Install cibuildwheel
       run: python -m pip install cibuildwheel==2.16.2
@@ -35,9 +35,9 @@ jobs:
     #     PYTHONUTF8: 1
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v7
       with:
-        name: craftcpp
+        name: craftcpp-${{ matrix.platform }}
         path: ./wheelhouse/*.whl
 
   upload-wheel:
@@ -45,14 +45,15 @@ jobs:
     if: github.ref == 'refs/heads/master'
     needs: [build]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         submodules: true
 
     - name: Download artifact
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v7
       with:
-          name: craftcpp
+          pattern: craftcpp-*
+          merge-multiple: true
           path: dist
     
     - name: Publish package to Private Repository

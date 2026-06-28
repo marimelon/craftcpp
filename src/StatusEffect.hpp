@@ -18,6 +18,8 @@ enum class StatusEffect : int
     加工,
     中級加工,
     一心不乱,
+    匠の好機,	// ヘイスティタッチ成功で付与 → デアリングタッチ解放(1ステップ)
+    匠の絶技,	// 次の耐久消費アクションのコストを0にする
 };
 
 constexpr auto StatusEffectsCount = magic_enum::enum_count<StatusEffect>();

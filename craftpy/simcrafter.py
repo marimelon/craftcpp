@@ -94,10 +94,6 @@ class SimCrafter(CrafterBase):
                 if state.condition == Condition.安定:
                     parcentage += 20
 
-                if state.buff[Buff.経過観察] > 0 and (
-                    action == Action.注視作業 or action == Action.注視加工
-                ):
-                    parcentage = 100
                 parcentage = min(100, parcentage)
 
                 is_action_successful = (
@@ -106,6 +102,10 @@ class SimCrafter(CrafterBase):
 
                 if action == Action.設計変更:
                     state.設計変更Count += 1
+                elif action == Action.クイックイノベーション:
+                    state.クイックイノベーションCount += 1
+                elif action == Action.匠の絶技:
+                    state.匠の絶技Count += 1
 
                 next_condition = SimCrafter.RandomlyGenNextCondition(
                     info, state.condition

@@ -24,6 +24,8 @@ struct State
 
 	int 設計変更Count = 0;
 	int 一心不乱Count = 0;
+	int クイックイノベーションCount = 0;
+	int 匠の絶技Count = 0;
 	int inner_quiet = 0;
 
 	State() : State(CraftInfo()) {}
@@ -54,6 +56,8 @@ struct State
 				   std::end(rhs.buff)) &&
 			   this->設計変更Count == rhs.設計変更Count &&
 			   this->一心不乱Count == rhs.一心不乱Count &&
+			   this->クイックイノベーションCount == rhs.クイックイノベーションCount &&
+			   this->匠の絶技Count == rhs.匠の絶技Count &&
 			   this->inner_quiet == rhs.inner_quiet;
 	}
 
