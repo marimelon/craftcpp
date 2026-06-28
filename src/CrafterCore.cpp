@@ -390,6 +390,9 @@ void CrafterCore::DeterministicExecuteAction(const CraftInfo &craft_status, Stat
 {
 	// ランダム性を排除したアクション処理
 
+	// ステップを消費しないアビリティ(匠の絶技は通常アクション扱いで消費する)
+	const bool is_no_step = (action == Action::設計変更 || action == Action::一心不乱 || action == Action::クイックイノベーション);
+
 	ApplyCPDurabilityChange(craft_status, state, action);
 	if (is_action_successful)
 	{
@@ -397,7 +400,12 @@ void CrafterCore::DeterministicExecuteAction(const CraftInfo &craft_status, Stat
 		ApplyQualityChange(craft_status, state, action);
 	}
 	ApplyInnerQuietChange(craft_status, state, action, is_action_successful);
-	ApplyPersistentBuffEffect(craft_status, state, action);
+	// ステップを消費しないアビリティはターンを進めないため、
+	// バフのターン経過・マニピュレーションの耐久回復を行わない
+	if (!is_no_step)
+	{
+		ApplyPersistentBuffEffect(craft_status, state, action);
+	}
 	if (is_action_successful)
 	{
 		ApplyBuffChange(craft_status, state, action);
@@ -423,8 +431,7 @@ void CrafterCore::DeterministicExecuteAction(const CraftInfo &craft_status, Stat
 		state->匠の絶技Count += 1;
 	}
 
-	// ステップを消費しないアビリティ(匠の絶技は通常アクション扱いで消費する)
-	if (action == Action::設計変更 || action == Action::一心不乱 || action == Action::クイックイノベーション)
+	if (is_no_step)
 	{
 		return;
 	}

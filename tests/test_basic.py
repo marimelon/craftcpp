@@ -374,3 +374,30 @@ def test_dawntrail_actions():
     core.DeterministicExecuteAction(env, s, ac.作業, m.craftcpp.Condition.通常, True)
     assert s.durability == du_before  # 耐久消費0
     assert s.buffs[sf.匠の絶技] == 0  # 消費済み
+
+
+def test_no_step_abilities():
+    # ステップを消費しないアビリティはターンを進めない:
+    # バフのターン経過・マニピュレーションの耐久回復・初手の消費が起きない
+    env = get_default_env()
+    core = m.craftcpp.CrafterCore
+    ac = m.craftcpp.Action
+    sf = m.craftcpp.StatusEffect
+
+    for no_step in (ac.一心不乱, ac.設計変更, ac.クイックイノベーション):
+        s = m.craftcpp.State(env)
+        s = core.ExecuteAction(env, s, ac.マニピュレーション)  # マニピュレーション付与、1ターン経過
+        s.durability = 50
+        manip_before = s.buffs[sf.マニピュレーション]
+        turn_before = s.turn
+        core.DeterministicExecuteAction(env, s, no_step, m.craftcpp.Condition.通常, True)
+        assert s.turn == turn_before, f"{no_step}: turn advanced"
+        assert s.durability == 50, f"{no_step}: manipulation healed on a no-step action"
+        assert s.buffs[sf.マニピュレーション] == manip_before, f"{no_step}: buff ticked down"
+
+    # 初手が消費されないので、ノーステップ後も確信/真価が使える
+    s = m.craftcpp.State(env)
+    core.DeterministicExecuteAction(env, s, ac.一心不乱, m.craftcpp.Condition.通常, True)
+    assert s.buffs[sf.初手] == 1
+    assert core.CanExecuteAction(env, s, ac.確信) == True
+    assert core.CanExecuteAction(env, s, ac.真価) == True
