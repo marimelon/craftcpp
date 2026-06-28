@@ -94,10 +94,6 @@ class SimCrafter(CrafterBase):
                 if state.condition == Condition.安定:
                     parcentage += 20
 
-                if state.buff[Buff.経過観察] > 0 and (
-                    action == Action.注視作業 or action == Action.注視加工
-                ):
-                    parcentage = 100
                 parcentage = min(100, parcentage)
 
                 is_action_successful = (

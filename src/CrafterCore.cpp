@@ -23,7 +23,7 @@ bool CrafterCore::CanExecuteAction(const CraftInfo &craft_status, const State &s
 	{
 		d_cp = -18;
 	}
-	if (state.buff.at(SF::中級加工) > 0 && action == Action::上級加工)
+	if ((state.buff.at(SF::中級加工) > 0 || state.buff.at(SF::経過観察) > 0) && action == Action::上級加工)
 	{
 		d_cp = -18;
 	}
@@ -84,7 +84,7 @@ void CrafterCore::ApplyCPDurabilityChange(const CraftInfo &craft_status, State *
 		d_cp = -18;
 	}
 
-	if (state->buff.at(SF::中級加工) > 0 && action == Action::上級加工)
+	if ((state->buff.at(SF::中級加工) > 0 || state->buff.at(SF::経過観察) > 0) && action == Action::上級加工)
 	{
 		d_cp = -18;
 	}
@@ -247,7 +247,6 @@ void CrafterCore::ApplyInnerQuietChange(const CraftInfo &craft_status, State *st
 	case Action::ヘイスティタッチ:
 	case Action::中級加工:
 	case Action::倹約加工:
-	case Action::注視加工:
 	case Action::精密作業:
 	case Action::上級加工:
 		state->inner_quiet += 1;
@@ -427,10 +426,6 @@ float CrafterCore::SuccessProbability(const State &state, Action action)
 	if (state.condition == Condition::安定)
 	{
 		parcentage += 20;
-	}
-	if (state.buff.at(SF::経過観察) > 0 && (action == Action::注視作業 || action == Action::注視加工))
-	{
-		parcentage = 100;
 	}
 	parcentage = std::min(100, parcentage);
 	return parcentage < 100 ? rnd.randBool(parcentage / 100.) : 1;

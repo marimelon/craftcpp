@@ -22,7 +22,7 @@ int main()
 	craft_status.base_quality = 647;
 	craft_status.illegal_actions = {
 		AC::ヘイスティタッチ,
-		AC::匠の早業, AC::最終確認, AC::注視作業, AC::注視加工, AC::突貫作業, AC::経過観察, AC::設計変更};
+		AC::匠の早業, AC::最終確認, AC::突貫作業, AC::経過観察, AC::設計変更};
 
 	craft_status.condition_rates[Condition::長持続] = 1;
 
