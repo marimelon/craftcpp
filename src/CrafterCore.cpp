@@ -64,6 +64,12 @@ bool CrafterCore::CanExecuteAction(const CraftInfo &craft_status, const State &s
 		return state.設計変更Count < 3;
 	case Action::一心不乱:
 		return state.一心不乱Count == 0;
+	case Action::デアリングタッチ:
+		return state.buff.at(StatusEffect::匠の好機) > 0;
+	case Action::クイックイノベーション:
+		return state.クイックイノベーションCount == 0 && state.buff.at(StatusEffect::イノベーション) == 0;
+	case Action::匠の絶技:
+		return state.匠の絶技Count == 0;
 	default:
 		break;
 	}
@@ -108,7 +114,21 @@ void CrafterCore::ApplyCPDurabilityChange(const CraftInfo &craft_status, State *
 	{
 		d_du = static_cast<int>(std::floor(d_du / 2.));
 	}
+
+	// 匠の絶技: 次の耐久消費アクションのコストを0にし、効果を消費する
+	if (d_du < 0 && state->buff.at(SF::匠の絶技) > 0)
+	{
+		d_du = 0;
+		state->buff.at(SF::匠の絶技) = 0;
+	}
+
 	state->durability = std::min(craft_status.max_durability, state->durability + d_du);
+
+	// パーフェクトメンド: 耐久を全回復する
+	if (action == Action::パーフェクトメンド)
+	{
+		state->durability = craft_status.max_durability;
+	}
 }
 
 void CrafterCore::ApplyProgressChange(const CraftInfo &craft_status, State *state, const Action &action)
@@ -249,7 +269,16 @@ void CrafterCore::ApplyInnerQuietChange(const CraftInfo &craft_status, State *st
 	case Action::倹約加工:
 	case Action::精密作業:
 	case Action::上級加工:
+	case Action::デアリングタッチ:
 		state->inner_quiet += 1;
+		break;
+	case Action::洗練加工:
+		// 加工系共通の+1に加え、加工(Basic Touch)コンボ時はさらに+1
+		state->inner_quiet += 1;
+		if (state->buff.at(SF::加工) > 0)
+		{
+			state->inner_quiet += 1;
+		}
 		break;
 	case Action::ビエルゴの祝福:
 		state->inner_quiet = 0;
@@ -275,7 +304,7 @@ void CrafterCore::ApplyPersistentBuffEffect(const CraftInfo &craft_status, State
 	}
 	for (auto &[key, value] : state->buff)
 	{
-		if (key == SF::一心不乱)
+		if (key == SF::一心不乱 || key == SF::匠の絶技)
 		{
 			continue;
 		}
@@ -341,6 +370,17 @@ void CrafterCore::ApplyBuffChange(const CraftInfo &craft_status, State *state, c
 	case Action::一心不乱:
 		state->buff.at(SF::一心不乱) = 1;
 		break;
+	case Action::ヘイスティタッチ:
+		// 成功時に匠の好機を付与(デアリングタッチ解放、1ステップ)
+		state->buff.at(SF::匠の好機) = 1;
+		break;
+	case Action::クイックイノベーション:
+		// イノベーション効果を1ターン付与(ステップを消費しない)
+		state->buff.at(SF::イノベーション) = 1;
+		break;
+	case Action::匠の絶技:
+		state->buff.at(SF::匠の絶技) = 1;
+		break;
 	default:
 		break;
 	}
@@ -372,7 +412,19 @@ void CrafterCore::DeterministicExecuteAction(const CraftInfo &craft_status, Stat
 	{
 		state->一心不乱Count += 1;
 	}
-	if (action == Action::設計変更 || action == Action::一心不乱)
+
+	if (action == Action::クイックイノベーション)
+	{
+		state->クイックイノベーションCount += 1;
+	}
+
+	if (action == Action::匠の絶技)
+	{
+		state->匠の絶技Count += 1;
+	}
+
+	// ステップを消費しないアビリティ(匠の絶技は通常アクション扱いで消費する)
+	if (action == Action::設計変更 || action == Action::一心不乱 || action == Action::クイックイノベーション)
 	{
 		return;
 	}

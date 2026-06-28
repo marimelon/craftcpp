@@ -102,6 +102,10 @@ class SimCrafter(CrafterBase):
 
                 if action == Action.設計変更:
                     state.設計変更Count += 1
+                elif action == Action.クイックイノベーション:
+                    state.クイックイノベーションCount += 1
+                elif action == Action.匠の絶技:
+                    state.匠の絶技Count += 1
 
                 next_condition = SimCrafter.RandomlyGenNextCondition(
                     info, state.condition

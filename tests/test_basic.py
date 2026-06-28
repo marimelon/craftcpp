@@ -60,6 +60,11 @@ def test_normal_actions():
         m.craftcpp.Action.匠の神業: (-32, 0, 100+100, 0),
         m.craftcpp.Action.設計変更: (0, 0, 0, 0),
         m.craftcpp.Action.一心不乱: (0, 0, 0, 0),
+        m.craftcpp.Action.洗練加工: (-24, 0, 100, -10),
+        m.craftcpp.Action.クイックイノベーション: (0, 0, 0, 0),
+        # パーフェクトメンドは耐久全回復(初期状態は満タンなので増減なし)
+        m.craftcpp.Action.パーフェクトメンド: (-112, 0, 0, 0),
+        m.craftcpp.Action.匠の絶技: (0, 0, 0, 0),
     }
 
     for action, correct in corrects.items():
@@ -298,3 +303,74 @@ def test_condition_sequence():
     s.condition = m.craftcpp.Condition.良兆候
     s = core.ExecuteAction(env, s, ac.作業)
     assert s.condition == m.craftcpp.Condition.高品質
+
+
+def test_dawntrail_actions():
+    # 黄金(7.x)新アクションのテスト
+    env = get_default_env()
+    core = m.craftcpp.CrafterCore
+    ac = m.craftcpp.Action
+    sf = m.craftcpp.StatusEffect
+
+    # 洗練加工: 単体ではIQ+1
+    s = m.craftcpp.State(env)
+    core.DeterministicExecuteAction(env, s, ac.洗練加工, m.craftcpp.Condition.通常, True)
+    assert s.inner_quiet == 1, f"state = {s}"
+
+    # 洗練加工: 加工(Basic Touch)コンボ時はIQ+2
+    s = m.craftcpp.State(env)
+    s = core.ExecuteAction(env, s, ac.加工)  # IQ+1, 加工バフ付与
+    assert s.inner_quiet == 1
+    core.DeterministicExecuteAction(env, s, ac.洗練加工, m.craftcpp.Condition.通常, True)
+    assert s.inner_quiet == 3, f"state = {s}"  # 1 + (1 + コンボ1)
+
+    # デアリングタッチ: 匠の好機(ヘイスティタッチ成功)が無いと使用不可
+    s = m.craftcpp.State(env)
+    assert core.CanExecuteAction(env, s, ac.デアリングタッチ) == False
+    core.DeterministicExecuteAction(env, s, ac.ヘイスティタッチ, m.craftcpp.Condition.通常, True)
+    assert s.buffs[sf.匠の好機] > 0
+    assert core.CanExecuteAction(env, s, ac.デアリングタッチ) == True
+    q_before = s.quality
+    iq_before = s.inner_quiet
+    core.DeterministicExecuteAction(env, s, ac.デアリングタッチ, m.craftcpp.Condition.通常, True)
+    assert s.quality == q_before + 150 * (1 + iq_before / 10)  # 品質効率150
+    assert s.inner_quiet == iq_before + 1
+
+    # ヘイスティタッチ失敗時は匠の好機が付かない
+    s = m.craftcpp.State(env)
+    core.DeterministicExecuteAction(env, s, ac.ヘイスティタッチ, m.craftcpp.Condition.通常, False)
+    assert s.buffs[sf.匠の好機] == 0
+    assert core.CanExecuteAction(env, s, ac.デアリングタッチ) == False
+
+    # クイックイノベーション: イノベ効果を付与し、ターンを消費しない・製作中1回
+    s = m.craftcpp.State(env)
+    turn_before = s.turn
+    core.DeterministicExecuteAction(
+        env, s, ac.クイックイノベーション, m.craftcpp.Condition.通常, True)
+    assert s.buffs[sf.イノベーション] == 1
+    assert s.turn == turn_before  # ステップ消費なし
+    assert s.クイックイノベーションCount == 1
+    assert core.CanExecuteAction(env, s, ac.クイックイノベーション) == False  # イノベ中 & 使用済み
+    # 付与されたイノベが次の1手に乗る
+    s = core.ExecuteAction(env, s, ac.加工)
+    assert s.quality == 150  # 加工100 * イノベ(+50%)
+
+    # パーフェクトメンド: 耐久を全回復
+    s = m.craftcpp.State(env)
+    s.durability = 10
+    core.DeterministicExecuteAction(env, s, ac.パーフェクトメンド, m.craftcpp.Condition.通常, True)
+    assert s.durability == env.max_durability
+    assert s.cp == env.max_cp - 112
+
+    # 匠の絶技: 次の耐久消費アクションのコストを0にする・ステップを消費する・製作中1回
+    s = m.craftcpp.State(env)
+    turn_before = s.turn
+    core.DeterministicExecuteAction(env, s, ac.匠の絶技, m.craftcpp.Condition.通常, True)
+    assert s.buffs[sf.匠の絶技] == 1
+    assert s.turn == turn_before + 1  # 通常アクション扱いでステップ消費
+    assert s.匠の絶技Count == 1
+    assert core.CanExecuteAction(env, s, ac.匠の絶技) == False
+    du_before = s.durability
+    core.DeterministicExecuteAction(env, s, ac.作業, m.craftcpp.Condition.通常, True)
+    assert s.durability == du_before  # 耐久消費0
+    assert s.buffs[sf.匠の絶技] == 0  # 消費済み

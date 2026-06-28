@@ -54,6 +54,11 @@ public:
 		{Action::匠の神業, {-32, 0, 100, 0, 100}},
 		{Action::設計変更, {0, 0, 100, 0, 0}},
 		{Action::一心不乱, {0, 0, 100, 0, 0}},
+		{Action::洗練加工, {-24, -10, 100, 0, 100}},
+		{Action::デアリングタッチ, {0, -10, 60, 0, 150}},
+		{Action::クイックイノベーション, {0, 0, 100, 0, 0}},
+		{Action::パーフェクトメンド, {-112, 0, 100, 0, 0}},
+		{Action::匠の絶技, {0, 0, 100, 0, 0}},
 	});
 
 	static bool CanExecuteAction(const CraftInfo &craft_status, const State &state, const Action &action);

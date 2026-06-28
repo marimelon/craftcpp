@@ -150,11 +150,13 @@ PYBIND11_MODULE(craftcpp, m)
 					self.buff,
 					self.設計変更Count,
 					self.一心不乱Count,
+					self.クイックイノベーションCount,
+					self.匠の絶技Count,
 					self.inner_quiet);
 			},
 			[](py::tuple t)
 			{
-				if (t.size() != 10)
+				if (t.size() != 12)
 					throw std::runtime_error("Invalid state!");
 				auto s = State();
 				s.cp = t[0].cast<int>();
@@ -166,7 +168,9 @@ PYBIND11_MODULE(craftcpp, m)
 				s.buff = t[6].cast<StatusEffectsMap>();
 				s.設計変更Count = t[7].cast<int>();
 				s.一心不乱Count = t[8].cast<int>();
-				s.inner_quiet = t[9].cast<int>();
+				s.クイックイノベーションCount = t[9].cast<int>();
+				s.匠の絶技Count = t[10].cast<int>();
+				s.inner_quiet = t[11].cast<int>();
 				return s;
 			}))
 
@@ -190,6 +194,8 @@ PYBIND11_MODULE(craftcpp, m)
 		.def_readwrite("buffs", &State::buff)
 		.def_readwrite("設計変更Count", &State::設計変更Count)
 		.def_readwrite("一心不乱Count", &State::一心不乱Count)
+		.def_readwrite("クイックイノベーションCount", &State::クイックイノベーションCount)
+		.def_readwrite("匠の絶技Count", &State::匠の絶技Count)
 		.def_readwrite("inner_quiet", &State::inner_quiet);
 
 	py::class_<ActionParams>(m, "ActionParams")
